@@ -84,7 +84,7 @@ export function buildTampermonkeyProfileLaunchArgs({
 export function openTampermonkeyProfile(options = {}) {
   const executablePath = resolveChromeExecutablePath(process.env);
   if (!executablePath) {
-    throw new Error('未找到可用的 Chrome 可执行文件，请设置 GWR_DEBUG_EXECUTABLE_PATH');
+    throw new Error('No usable Chrome executable was found; set GWR_DEBUG_EXECUTABLE_PATH');
   }
 
   const args = buildTampermonkeyProfileLaunchArgs(options);
@@ -110,11 +110,11 @@ export function openTampermonkeyProfile(options = {}) {
 function runCli() {
   const options = parseOpenTampermonkeyProfileCliArgs(process.argv.slice(2));
   const launched = openTampermonkeyProfile(options);
-  console.log(`Chrome 已打开，固定 profile: ${options.profileDir}`);
-  console.log(`目标页面: ${options.targetUrl}`);
-  console.log(`代理: ${options.proxyServer || 'disabled'}`);
-  console.log(`CDP 端口: ${options.cdpPort}`);
-  console.log(`可执行文件: ${launched.executablePath}`);
+  console.log(`Chrome is open, fixed profile: ${options.profileDir}`);
+  console.log(`Target page: ${options.targetUrl}`);
+  console.log(`Proxy: ${options.proxyServer || 'disabled'}`);
+  console.log(`CDP port: ${options.cdpPort}`);
+  console.log(`Executable: ${launched.executablePath}`);
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
