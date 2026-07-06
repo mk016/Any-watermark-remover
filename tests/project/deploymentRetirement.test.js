@@ -18,7 +18,7 @@ test('docs and local agent instructions should no longer describe retired asset 
   for (const relativePath of ['README.md', 'README_zh.md', 'AGENTS.md']) {
     const source = readRepoText(relativePath);
     assert.doesNotMatch(source, /wrangler\.toml/i);
-    assert.doesNotMatch(source, /Cloudflare Worker|Cloudflare 部署|Wrangler/i);
+    assert.doesNotMatch(source, /Cloudflare Worker|Cloudflare deployment|Wrangler/i);
   }
 });
 
