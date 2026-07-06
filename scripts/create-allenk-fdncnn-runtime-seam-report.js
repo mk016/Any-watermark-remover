@@ -297,7 +297,7 @@ function parseArgs(argv = process.argv.slice(2)) {
         } else if (arg === '--help' || arg === '-h') {
             args.help = true;
         } else {
-            throw new Error(`未知参数: ${arg}`);
+            throw new Error(`Unknown argument: ${arg}`);
         }
     }
     return args;
