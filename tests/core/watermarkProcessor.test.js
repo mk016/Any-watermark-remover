@@ -434,7 +434,7 @@ test('processWatermarkImageData should relocate visible 45px fixed-local residua
             maxGradient: 0.22
         },
         {
-            samplePath: externalSamplePath('样本/Gemini_Generated_Image_21odi621odi621od.png'),
+            samplePath: externalSamplePath('sample/Gemini_Generated_Image_21odi621odi621od.png'),
             expectedConfigRange: {
                 logoSize: [47, 52],
                 marginRight: [39, 42],
@@ -870,7 +870,7 @@ test('processWatermarkImageData should rescue issue 93 canonical 96px positive h
 });
 
 test('processWatermarkImageData should allow stronger mid-alpha on strong 48px large-margin residuals', async (t) => {
-    const samplePath = externalSamplePath('样本/Gemini_Generated_Image_n79y30n79y30n79y.png');
+    const samplePath = externalSamplePath('sample/Gemini_Generated_Image_n79y30n79y30n79y.png');
     try {
         await access(samplePath);
     } catch {
