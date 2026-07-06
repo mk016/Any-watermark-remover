@@ -247,7 +247,7 @@ function parseArgs(argv) {
         } else if (arg === '--help' || arg === '-h') {
             parsed.help = true;
         } else {
-            throw new Error(`未知参数: ${arg}`);
+            throw new Error(`Unknown argument: ${arg}`);
         }
     }
     return parsed;
