@@ -24,7 +24,7 @@ function parseJson(text, label) {
     try {
         return JSON.parse(text || 'null');
     } catch (error) {
-        throw new Error(`无法解析 ${label} JSON: ${error?.message || String(error)}`);
+        throw new Error(`Unable to parse ${label} JSON: ${error?.message || String(error)}`);
     }
 }
 
@@ -199,7 +199,7 @@ async function fetchFailedLogSnippet(execFile, { runId, cwd }) {
         return trimLogSnippet(stdout);
     } catch (error) {
         const message = error?.stderr || error?.stdout || error?.message || String(error);
-        return [`无法获取失败日志: ${String(message).trim()}`];
+        return [`Unable to retrieve failure logs: ${String(message).trim()}`];
     }
 }
 
@@ -252,7 +252,7 @@ function parseCliArgs(argv) {
         } else if (arg === '--help' || arg === '-h') {
             parsed.help = true;
         } else {
-            throw new Error(`未知参数: ${arg}`);
+            throw new Error(`Unknown argument: ${arg}`);
         }
     }
     return parsed;
