@@ -192,7 +192,7 @@ export async function verifyVideoUiPresetOutput({
     screenshots = true,
     timeoutMs = 6 * 60 * 1000
 } = {}) {
-    if (!inputPath) throw new Error('缺少 --input 视频路径');
+    if (!inputPath) throw new Error('Missing --input video path');
     const paths = resolveVideoUiPresetVerificationPaths({
         inputPath,
         outputDir,
