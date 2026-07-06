@@ -20,7 +20,7 @@ test('renderVideoUiPresetExportMarkdown records the real UI preset path', () => 
     },
     resultState: {
       statusTone: 'success',
-      statusText: '导出完成'
+      statusText: 'Export complete'
     },
     screenshots: {
       before: 'before.png',
