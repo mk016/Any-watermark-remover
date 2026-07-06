@@ -86,7 +86,7 @@ function enhanceAlphaEdges(alphaMap, size, strength) {
 
 function buildBaseVideoAlphaMap(size) {
     const alpha96 = getEmbeddedAlphaMap(VIDEO_ALPHA_PROFILE) || getEmbeddedAlphaMap(96);
-    if (!alpha96) throw new Error('缺少视频 alpha profile');
+    if (!alpha96) throw new Error('Missing video alpha profile');
     return size === 96 ? new Float32Array(alpha96) : resizeAlphaMapArea(alpha96, 96, size);
 }
 
@@ -203,7 +203,7 @@ async function runCase(caseItem, {
     });
     const analysisCandidate = resolveExpectedWatermarkCandidate(caseItem.expected, renderResult.metadata);
     const position = analysisCandidate ? buildLocalPosition(analysisCandidate, renderResult.cropBox) : null;
-    if (!position) throw new Error(`无法解析 ${caseItem.id} 的水印位置`);
+    if (!position) throw new Error(`Unable to parse the watermark position for ${caseItem.id}`);
 
     const baseAlphaMap = buildBaseVideoAlphaMap(position.width);
     const baselineFrames = [];
@@ -434,7 +434,7 @@ function parseCliArgs(argv) {
         } else if (arg === '--help' || arg === '-h') {
             parsed.help = true;
         } else {
-            throw new Error(`未知参数: ${arg}`);
+            throw new Error(`Unknown argument: ${arg}`);
         }
     }
     return parsed;
