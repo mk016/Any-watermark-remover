@@ -19,7 +19,7 @@ test('parseTimestampList should parse comma-separated seconds', () => {
 test('parseTimestampList should reject empty explicit timestamp sets', () => {
     assert.throws(
         () => parseTimestampList('bad,-1'),
-        /至少需要一个有效时间点/
+        /At least one valid timestamp is required/
     );
 });
 
