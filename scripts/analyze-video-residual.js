@@ -69,7 +69,7 @@ async function probeVideo(videoPath) {
     const parsed = JSON.parse(stdout);
     const stream = parsed.streams?.[0];
     if (!stream) {
-        throw new Error(`无法读取视频流：${videoPath}`);
+        throw new Error(`Unable to read video stream：${videoPath}`);
     }
     return {
         width: Number(stream.width),
@@ -214,12 +214,12 @@ export function summarizeWatermarkResidual({
     highAlphaThreshold = DEFAULT_HIGH_ALPHA_THRESHOLD
 }) {
     if (!currentImage || !referenceImage || currentImage.width !== referenceImage.width || currentImage.height !== referenceImage.height) {
-        throw new Error('current/reference 图像尺寸不一致');
+        throw new Error('Current/reference image dimensions do not match');
     }
     const width = watermarkPosition.width;
     const height = watermarkPosition.height;
     if (alphaMap.length !== width * height) {
-        throw new Error('alphaMap 尺寸与 watermarkPosition 不一致');
+        throw new Error('alphaMap size does not match watermarkPosition');
     }
 
     const { gradient, maxGradient } = buildAlphaGradientMap(alphaMap, width, height);
@@ -305,7 +305,7 @@ function resolvePrimaryWatermark({ metadata, cropBox }) {
     const candidates = resolveVideoWatermarkCandidates(metadata.width, metadata.height);
     const primary = candidates[0];
     if (!primary) {
-        throw new Error('无法根据视频尺寸推断视频水印候选');
+        throw new Error('Unable to infer a video watermark candidate from the video dimensions');
     }
     const localPosition = {
         x: primary.x - cropBox.left,
@@ -329,8 +329,8 @@ export async function analyzeVideoResidual({
     edgeGradientThreshold = DEFAULT_EDGE_GRADIENT_THRESHOLD,
     highAlphaThreshold = DEFAULT_HIGH_ALPHA_THRESHOLD
 } = {}) {
-    if (!currentPath) throw new Error('缺少 --current 视频路径');
-    if (!referencePath) throw new Error('缺少 --reference/--allenk 视频路径');
+    if (!currentPath) throw new Error('Missing --current video path');
+    if (!referencePath) throw new Error('Missing --reference/--allenk video path');
 
     const metadataSource = originalPath || currentPath;
     const metadata = await probeVideo(metadataSource);
