@@ -263,7 +263,7 @@ export async function verifyVideoUiPresetBatch(options = {}) {
     ]);
 
     if (!items.length) {
-        throw new Error('缺少 --input 或 --manifest');
+        throw new Error('Missing --input or --manifest');
     }
 
     const results = [];
