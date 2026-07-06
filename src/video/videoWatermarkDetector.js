@@ -1084,7 +1084,7 @@ export function detectDiamondVideoWatermarkFromFrames({
         throw new Error('No video frames available for detection');
     }
     if (!candidates.length) {
-        throw new Error(`暂不支持 ${width}x${height} 的视频水印候选`);
+        throw new Error(`This resolution is not supported for video watermark candidates: ${width}x${height}`);
     }
 
     const perCandidate = new Map(candidates.map((candidate) => [candidate.id, {
