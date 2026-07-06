@@ -202,11 +202,11 @@ export async function createVideoReviewPack({
         } : null,
         comparisons,
         checklist: [
-            'ROI 4-up: auto boundary 面板中不应有明显星形残影、亮/暗边框或突兀色块。',
-            'Full 4-up: 水印区域外不应出现可见全局损伤或色彩跳变。',
-            'Temporal: 拖动 0s 到 10s，水印区域不应有明显闪烁、跳动或局部纹理呼吸。',
-            'Sentinel: 标准锚点样例仍应保持 denoiseBackend=none，不应误套 relocated preset。',
-            'Decision: 若 ROI 可接受且 full-frame 无副作用，可把当前 preset 进入默认策略复核。'
+            'ROI 4-up: the auto boundary panel should not show obvious star-shaped residuals, bright/dark borders, or abrupt color blocks.',
+            'Full 4-up: no visible global damage or color jumps should appear outside the watermark region.',
+            'Temporal: drag from 0s to 10s; the watermark region should not show obvious flicker, jitter, or local texture breathing.',
+            'Sentinel: the standard anchor sample should still keep denoiseBackend=none and should not accidentally use the relocated preset.',
+            'Decision: if the ROI is acceptable and the full-frame has no side effects, the current preset can enter review for the default strategy.'
         ]
     };
 
@@ -335,7 +335,7 @@ function parseArgs(argv) {
         } else if (arg === '--help' || arg === '-h') {
             parsed.help = true;
         } else {
-            throw new Error(`未知参数: ${arg}`);
+            throw new Error(`Unknown argument: ${arg}`);
         }
     }
 
