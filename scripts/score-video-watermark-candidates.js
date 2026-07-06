@@ -91,7 +91,7 @@ async function probeVideo(videoPath) {
     const parsed = JSON.parse(stdout);
     const stream = parsed.streams?.[0];
     if (!stream) {
-        throw new Error(`无法读取视频流：${videoPath}`);
+        throw new Error(`Unable to read video stream：${videoPath}`);
     }
     return {
         width: Number(stream.width),
@@ -494,7 +494,7 @@ export async function createVideoWatermarkCandidateScoreReport({
     gridExtraSizes = []
 } = {}) {
     if (!inputPath) {
-        throw new Error('缺少输入视频路径');
+        throw new Error('Missing input video path');
     }
 
     const resolvedInputPath = path.resolve(inputPath);
