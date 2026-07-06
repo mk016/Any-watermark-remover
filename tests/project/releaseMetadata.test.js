@@ -43,7 +43,7 @@ test('release checklists should include the Chrome extension package artifacts',
     assert.match(releaseEn, /official website/i);
     assert.match(releaseZh, /pnpm package:extension/);
     assert.match(releaseZh, /latest-extension\.json/);
-    assert.match(releaseZh, /官网/);
+    assert.match(releaseZh, /website/);
 });
 
 test('release checklists should require internal comparison and readiness gates', async () => {
@@ -83,7 +83,7 @@ test('release checklists should require internal comparison and readiness gates'
     assert.match(releaseZh, /pnpm release:quality-gate/);
     assert.match(releaseZh, /pnpm release:ci-check/);
     assert.match(releaseZh, /GitHub Actions CI/);
-    assert.match(releaseZh, /内部对比 gate/);
+    assert.match(releaseZh, /internal comparison gate/);
     assert.doesNotMatch(releaseZh, /pnpm compare:allenk-v2/);
     assert.match(releaseZh, /--fail-on-incomplete/);
     assert.match(releaseZh, /pnpm release:readiness/);
