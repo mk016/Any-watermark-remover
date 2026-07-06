@@ -258,8 +258,8 @@ async function buildSheet(rows, outputPath) {
 
 function resolveCase(manifest, caseId) {
     const found = manifest.cases.find((item) => item.id === caseId);
-    if (!found) throw new Error(`manifest 中找不到 case: ${caseId}`);
-    if (!found.expected?.anchor) throw new Error(`case ${caseId} 缺少 expected.anchor`);
+    if (!found) throw new Error(`manifest does not contain case: ${caseId}`);
+    if (!found.expected?.anchor) throw new Error(`Case ${caseId} is missing expected.anchor`);
     return found;
 }
 
@@ -314,13 +314,13 @@ function parseArgs(argv) {
         } else if (arg === '--help' || arg === '-h') {
             parsed.help = true;
         } else {
-            throw new Error(`未知参数: ${arg}`);
+            throw new Error(`Unknown argument: ${arg}`);
         }
     }
 
     if (!parsed.help) {
         for (const key of ['baselineFrameDir', 'variantFrameDir', 'referenceFrameDir']) {
-            if (!parsed[key]) throw new Error(`缺少 --${key.replace(/[A-Z]/g, (m) => `-${m.toLowerCase()}`)}`);
+            if (!parsed[key]) throw new Error(`Missing --${key.replace(/[A-Z]/g, (m) => `-${m.toLowerCase()}`)}`);
         }
     }
 
