@@ -82,7 +82,7 @@ function parseArgs(argv) {
         } else if (arg === '--help' || arg === '-h') {
             args.help = true;
         } else {
-            throw new Error(`未知参数: ${arg}`);
+            throw new Error(`Unknown argument: ${arg}`);
         }
     }
 
@@ -120,7 +120,7 @@ async function blobUrlToBuffer(page) {
     const base64 = await page.evaluate(async () => {
         const link = document.getElementById('downloadBtn');
         if (!link?.href || link.getAttribute('aria-disabled') === 'true') {
-            throw new Error('页面尚未生成可下载结果');
+            throw new Error('The page has not generated a downloadable result yet');
         }
 
         const blob = await fetch(link.href).then((response) => response.blob());
@@ -150,7 +150,7 @@ async function collectVideoExportControls(page) {
 async function setNumericInputValue(page, selector, value, { step = null } = {}) {
     await page.evaluate(({ selector: targetSelector, value: targetValue, step: targetStep }) => {
         const input = document.querySelector(targetSelector);
-        if (!input) throw new Error(`找不到控件: ${targetSelector}`);
+        if (!input) throw new Error(`Could not find control: ${targetSelector}`);
         if (targetStep !== null) input.setAttribute('step', targetStep);
         if (input.hasAttribute('max') && Number(targetValue) > Number(input.getAttribute('max'))) {
             input.setAttribute('max', String(targetValue));
@@ -164,7 +164,7 @@ async function setNumericInputValue(page, selector, value, { step = null } = {})
 async function setControlValue(page, selector, value) {
     await page.evaluate(({ selector: targetSelector, value: targetValue }) => {
         const control = document.querySelector(targetSelector);
-        if (!control) throw new Error(`找不到控件: ${targetSelector}`);
+        if (!control) throw new Error(`Could not find control: ${targetSelector}`);
         control.value = String(targetValue);
         control.dispatchEvent(new Event('input', { bubbles: true }));
         control.dispatchEvent(new Event('change', { bubbles: true }));
@@ -174,7 +174,7 @@ async function setControlValue(page, selector, value) {
 async function setCheckboxValue(page, selector, checked) {
     await page.evaluate(({ selector: targetSelector, checked: targetChecked }) => {
         const checkbox = document.querySelector(targetSelector);
-        if (!checkbox) throw new Error(`找不到控件: ${targetSelector}`);
+        if (!checkbox) throw new Error(`Could not find control: ${targetSelector}`);
         checkbox.checked = Boolean(targetChecked);
         checkbox.dispatchEvent(new Event('input', { bubbles: true }));
         checkbox.dispatchEvent(new Event('change', { bubbles: true }));
@@ -203,8 +203,8 @@ export async function exportVideoBackendVariant({
     allowLowConfidence = false,
     timeoutMs = 6 * 60 * 1000
 }) {
-    if (!inputPath) throw new Error('缺少 --input');
-    if (!outputPath) throw new Error('缺少 --output');
+    if (!inputPath) throw new Error('Missing --input');
+    if (!outputPath) throw new Error('Missing --output');
 
     const browser = await chromium.launch({ headless: true });
     try {
@@ -304,7 +304,7 @@ export async function exportVideoBackendVariant({
             const status = await page.locator('#status').textContent();
             const tone = await page.locator('#status').getAttribute('data-tone');
             if (tone !== 'success') {
-                throw new Error(status || '视频导出失败');
+                throw new Error(status || 'Video export failed');
             }
 
             const actualControls = await collectVideoExportControls(page);
