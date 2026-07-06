@@ -42,11 +42,11 @@ export function parseCropBox(value) {
     if (value == null || value === '') return null;
     const parts = String(value).trim().split(/[,\s]+/).map((part) => toFiniteNumber(part.trim()));
     if (parts.length !== 4 || parts.some((part) => part === null)) {
-        throw new Error('裁剪区域格式应为 --crop x,y,width,height');
+        throw new Error('Crop area format should be --crop x,y,width,height');
     }
     const [x, y, width, height] = parts.map((part) => Math.round(part));
     if (width <= 0 || height <= 0) {
-        throw new Error('裁剪区域 width/height 必须为正数');
+        throw new Error('Crop area width/height must be positive numbers');
     }
     return { x, y, width, height };
 }
@@ -55,12 +55,12 @@ export function parseInputSpec(value) {
     const raw = String(value || '');
     const eqIndex = raw.indexOf('=');
     if (eqIndex <= 0 || eqIndex === raw.length - 1) {
-        throw new Error('输入格式应为 --input label=path/to/video.mp4');
+        throw new Error('Input format should be --input label=path/to/video.mp4');
     }
     const label = raw.slice(0, eqIndex).trim();
     const inputPath = raw.slice(eqIndex + 1).trim();
     if (!label || !inputPath) {
-        throw new Error('输入 label 和路径不能为空');
+        throw new Error('Input label and path must not be empty');
     }
     return {
         label,
@@ -91,7 +91,7 @@ export function buildComparisonGridFilter({
     tileWidth = DEFAULT_TILE_WIDTH
 }) {
     if (!Array.isArray(inputs) || inputs.length < 2 || inputs.length > 4) {
-        throw new Error('视频对比网格需要 2 到 4 个输入');
+        throw new Error('Video comparison grid requires 2 to 4 inputs');
     }
     const panelFilters = inputs.map((input, index) => {
         const pieces = [];
@@ -145,7 +145,7 @@ export async function renderVideoComparisonGrid({
     preset = DEFAULT_PRESET
 }) {
     if (!Array.isArray(inputs) || inputs.length < 2 || inputs.length > 4) {
-        throw new Error('视频对比网格需要 2 到 4 个输入');
+        throw new Error('Video comparison grid requires 2 to 4 inputs');
     }
     const resolvedOutputPath = path.resolve(outputPath);
     const resolvedReportPath = reportPath
@@ -238,7 +238,7 @@ function parseArgs(argv) {
         } else if (arg === '--help' || arg === '-h') {
             args.help = true;
         } else {
-            throw new Error(`未知参数: ${arg}`);
+            throw new Error(`Unknown argument: ${arg}`);
         }
     }
 
