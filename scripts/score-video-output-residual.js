@@ -217,7 +217,7 @@ async function resolveScoreReport({
         return await readJson(scorePath);
     }
     if (!videoPath) {
-        throw new Error(`缺少 ${suffix === 'original' ? '--original' : '--current'} 视频路径`);
+        throw new Error(`Missing ${suffix === 'original' ? '--original' : '--current'} video path`);
     }
     return await createVideoWatermarkCandidateScoreReport({
         inputPath: videoPath,
