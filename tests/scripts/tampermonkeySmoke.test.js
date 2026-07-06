@@ -103,12 +103,12 @@ test('maybeRunFreshnessPreflight should treat unavailable freshness context as s
   const result = await maybeRunFreshnessPreflight({
     mode: 'run',
     runFreshnessCheck: async () => {
-      throw new Error('未找到已打开的 Tampermonkey 编辑器页面');
+      throw new Error('No open Tampermonkey editor page was found');
     }
   });
 
   assert.equal(result.status, 'skipped');
-  assert.match(result.reason, /Tampermonkey 编辑器页面/);
+  assert.match(result.reason, /Tampermonkey editor page/);
 });
 
 test('runTampermonkeySmoke should wire freshness preflight before the probe page flow', () => {
