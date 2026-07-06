@@ -63,32 +63,32 @@ const FORBIDDEN_RELEASE_CLAIM_PATTERNS = Object.freeze([
     {
         id: 'video-allenk-parity',
         claim: 'video-v2-allenk-parity',
-        pattern: /(?:video|视频)[\s\S]{0,120}(?:allenk|geminiwatermarktool)[\s\S]{0,120}(?:parity|match(?:es|ed|ing)?|same|equivalent|接近|媲美|同等|相当)/i
+        pattern: /(?:video|video)[\s\S]{0,120}(?:allenk|geminiwatermarktool)[\s\S]{0,120}(?:parity|match(?:es|ed|ing)?|same|equivalent|close|comparable)/i
     },
     {
         id: 'allenk-video-parity',
         claim: 'video-v2-allenk-parity',
-        pattern: /(?:allenk|geminiwatermarktool)[\s\S]{0,120}(?:video|视频)[\s\S]{0,120}(?:parity|match(?:es|ed|ing)?|same|equivalent|接近|媲美|同等|相当)/i
+        pattern: /(?:allenk|geminiwatermarktool)[\s\S]{0,120}(?:video|video)[\s\S]{0,120}(?:parity|match(?:es|ed|ing)?|same|equivalent|close|comparable)/i
     },
     {
         id: 'video-denoise-default',
         claim: 'new-video-denoise-default',
-        pattern: /(?:video|视频)[\s\S]{0,120}(?:denoise|去噪|降噪)[\s\S]{0,120}(?:default|enabled by default|production|ready|默认|生产|启用)/i
+        pattern: /(?:video|video)[\s\S]{0,120}(?:denoise|noise-reduction)[\s\S]{0,120}(?:default|enabled by default|production|ready)/i
     },
     {
         id: 'video-alpha-shape-default',
         claim: 'new-video-alpha-shape-default',
-        pattern: /(?:video|视频)[\s\S]{0,120}(?:alpha[ -]?shape|alpha profile|alpha\s*形状|alpha\s*配置)[\s\S]{0,120}(?:default|enabled by default|production|ready|默认|生产|启用)/i
+        pattern: /(?:video|video)[\s\S]{0,120}(?:alpha[ -]?shape|alpha profile)[\s\S]{0,120}(?:default|enabled by default|production|ready)/i
     },
     {
         id: 'broad-image-v2-coverage',
         claim: 'broad-image-v2-coverage',
-        pattern: /(?:image|images|图片|图像)[\s\S]{0,80}(?:v2|V2)[\s\S]{0,120}(?:broad|full|all|complete|coverage|covered|supported|全量|广泛|全面|覆盖|支持)[\s\S]{0,120}(?:ready|release|production|default|enabled|可发|发布|生产|默认|启用)/i
+        pattern: /(?:image|images)[\s\S]{0,80}(?:v2|V2)[\s\S]{0,120}(?:broad|full|all|complete|coverage|covered|supported)[\s\S]{0,120}(?:ready|release|production|default|enabled)/i
     },
     {
         id: 'visible-residual-productionization',
         claim: 'new-visible-residual-alpha-profile-productionization',
-        pattern: /(?:visible residual|可见残留|残留)[\s\S]{0,120}(?:alpha[ -]?profile|alpha\s*配置|profile|配置)[\s\S]{0,120}(?:production|default|enabled|ready|生产|默认|启用|可发)/i
+        pattern: /(?:visible residual|residual)[\s\S]{0,120}(?:alpha[ -]?profile|profile)[\s\S]{0,120}(?:production|default|enabled|ready)/i
     }
 ]);
 
@@ -432,16 +432,16 @@ function summarizePackage(packageArtifact, latestExtensionArtifact, { gitStatusT
         },
         releaseNotes: releaseFreshness.dirtyBuildInputsNewerThanZip
             ? [
-                '当前存在 dirty release build inputs；发布前需要重新运行 build/package，并刷新 release artifact。',
-                '该状态不否定算法能力边界，只表示现有 zip 不能作为最终待发包。'
+                'There are dirty release build inputs; rebuild/package before release and refresh the release artifact.',
+                'This state does not negate the algorithm capability boundary; it only means the current zip cannot be the final release candidate.'
             ]
             : releaseFreshness.buildInputDirtyPaths.length > 0
                 ? [
-                    '当前存在 dirty release build inputs，但 release zip 不早于这些输入；仍需保留 dirty path 审计记录。',
-                    '若后续继续修改构建输入，需要重新 build/package 并刷新 readiness。'
+                    'There are dirty release build inputs, but the release zip is not older than those inputs; the dirty path audit record must be retained.',
+                    'If build inputs are modified later, rebuild/package and refresh readiness.'
                 ]
             : [
-                'release zip、sha256 和 latest metadata 当前存在且版本一致。'
+                'The release zip, sha256, and latest metadata exist and their versions match.'
             ]
     };
 }
@@ -527,7 +527,7 @@ async function summarizeReleaseVersionDocs(packageArtifact, {
         releaseEnMentionsExtensionPackage: /pnpm package:extension/.test(artifacts.releaseEn.text) && /latest-extension\.json/.test(artifacts.releaseEn.text),
         releaseZhMentionsExtensionPackage: /pnpm package:extension/.test(artifacts.releaseZh.text) && /latest-extension\.json/.test(artifacts.releaseZh.text),
         releaseEnMentionsInternalComparisonGate: /internal comparison gate/i.test(artifacts.releaseEn.text),
-        releaseZhMentionsInternalComparisonGate: /内部对比 gate/.test(artifacts.releaseZh.text),
+        releaseZhMentionsInternalComparisonGate: /internal comparison gate/.test(artifacts.releaseZh.text),
         releaseEnMentionsInternalComparisonFailGate: /--fail-on-incomplete/.test(artifacts.releaseEn.text),
         releaseZhMentionsInternalComparisonFailGate: /--fail-on-incomplete/.test(artifacts.releaseZh.text),
         releaseEnMentionsReadinessGate: /pnpm release:readiness/.test(artifacts.releaseEn.text),
@@ -566,10 +566,10 @@ async function summarizeReleaseVersionDocs(packageArtifact, {
         },
         releaseNotes: blockers.length === 0
             ? [
-                '当前 package version 已记录在中英文 changelog，release checklist 覆盖 changelog、extension package artifact、内部对比 gate、release readiness gate、一键 release preflight / quality gate 与 Release Claim Matrix。'
+                'The current package version is documented in the English and Chinese changelogs; the release checklist covers the changelog, extension package artifact, internal comparison gate, release readiness gate, one-click release preflight / quality gate, and the Release Claim Matrix.'
             ]
             : [
-                '版本文档或发版清单未覆盖当前版本；发布前需要补齐 changelog / release checklist。'
+                'The release documentation or release checklist does not cover the current version; fill in the changelog / release checklist before release.'
             ]
     };
 }
@@ -641,8 +641,8 @@ function summarizeVisibleResidual(loopArtifact, auditArtifact, admissionArtifact
             admissionBlockedReasons: admission.productionProfileAdmission?.blockedReasons || []
         },
         releaseNotes: [
-            '当前默认图片路径可继续发版，但不能把 visible residual alpha/profile 候选升为生产默认。',
-            '正式 gold 迁移与生产 profile 变更仍需要人工审阅完成。'
+            'The current default image path may continue to be released, but visible residual alpha/profile candidates should not be promoted to production defaults.',
+            'Formal gold migration and production profile changes still require human review.'
         ]
     };
 }
@@ -677,7 +677,7 @@ function summarizeVideoProductionDefaults(cleanupArtifact, appArtifact, presetAr
     const hasRelocatedReviewPreset = /function\s+getRelocatedReviewPresetConfig\(/.test(presetText) &&
         /CANVAS_TEMPORAL_MATCH_DELTA_STABILIZE/.test(presetText);
     const reviewPresetAutoApplies = /function\s+maybeApplyRelocatedReviewPreset\(/.test(appText);
-    const reviewPresetMarkedReviewOnly = /复核预设/.test(appText) && /不是默认策略/.test(appText);
+    const reviewPresetMarkedReviewOnly = /review preset/.test(appText) && /is not the default strategy/.test(appText);
     const debugAlphaOverrides = [
         '__gwrVideoAlphaLowScale',
         '__gwrVideoAlphaBodyScale',
@@ -726,11 +726,11 @@ function summarizeVideoProductionDefaults(cleanupArtifact, appArtifact, presetAr
         },
         releaseNotes: blockers.length === 0
             ? [
-                '视频底层全局默认仍保持 denoiseBackend=none；页面可通过自动 preset 选择本地 AI 处理，但不得宣传为 allenk parity。',
-                'relocated review preset 可保留为自动复核入口；更强 denoise / alpha shape 质量 claim 仍由独立 gate 控制。'
+                'The video runtime still keeps denoiseBackend=none by default; the page can choose local AI processing through automatic presets, but it must not be marketed as allenk parity.',
+                'The relocated review preset may remain as an automatic review entry; stronger denoise / alpha shape quality claims remain controlled by an independent gate.'
             ]
             : [
-                '视频生产默认路径疑似启用了未 promoted 的实验候选；发版前必须恢复为安全默认或补齐多层 gate 证据。'
+                'The video production default path appears to use an unpromoted experimental candidate; before release it must be reverted to a safe default or backed by multi-layer gate evidence.'
             ]
     };
 }
@@ -778,8 +778,8 @@ function summarizeV2Cleanup(v2Artifact) {
                 : null
         },
         releaseNotes: [
-            'V2 36px 只按 evidence-gated 小水印 profile 发布，不应宣传为全量 V2 覆盖。',
-            '当前样本显示 edge cleanup 可过 metric，但中心灰影问题仍属于后续 render/composite 模型研究。'
+            'The V2 36px profile is published only as an evidence-gated small-watermark profile and should not be described as full V2 coverage.',
+            'The current samples show that edge cleanup can satisfy metrics, but the central gray shadow issue still belongs to future render/composite model research.'
         ]
     };
 }
@@ -815,8 +815,8 @@ function summarizeVideoDenoise(gateArtifact) {
             layerIds: Array.isArray(gate.layers) ? gate.layers.map((item) => item.id) : []
         },
         releaseNotes: [
-            '视频 V2 不能宣传为接近 allenk v0.6.2 的 denoise 质量。',
-            '旧 Canvas denoise 候选已被 gate 拒绝，下一步应接入真正 ROI ML/WebGPU/WebNN denoise 候选。'
+            'Video V2 must not be marketed as having denoise quality close to allenk v0.6.2.',
+            'The old Canvas denoise candidate has been rejected by the gate; the next step should be to adopt a real ROI ML/WebGPU/WebNN denoise candidate.'
         ]
     };
 }
@@ -871,11 +871,11 @@ function summarizeVideoReviewDelivery(deliveryArtifact, reviewPackArtifact) {
         },
         releaseNotes: blockers.length === 0
             ? [
-                '视频候选已生成 delivery gate 与 review pack，可进入人工视觉复核。',
-                '该 lane 只证明复核材料就绪；正式默认策略仍需人工接受后再更新 release claim。'
+                'The video candidate has generated a delivery gate and review pack, and is ready for human visual review.',
+                'This lane only proves that the review materials are ready; the formal default strategy still needs human acceptance before the release claim is updated.'
             ]
             : [
-                '视频候选缺少可复核材料或 gate 未 ready；继续保持实验/复核路径。'
+                'The video candidate lacks reviewable materials or the gate is not ready; keep the experimental / review path.'
             ]
     };
 }
@@ -944,8 +944,8 @@ function summarizeVideoAlphaShape(gateRoot) {
             reports: summaries
         },
         releaseNotes: [
-            'alpha-shape 候选仍是实验线；fit 层改善不能替代视频级 gate。',
-            '没有 promoted candidate 前，不应把这些 profile 写入默认视频处理路径。'
+            'The alpha-shape candidate remains experimental; improvements in the fit layer do not replace the video-level gate.',
+            'Before there is a promoted candidate, these profiles should not be written to the default video processing path.'
         ]
     };
 }
@@ -999,10 +999,10 @@ async function summarizeReleaseClaims(claimFiles = DEFAULT_INPUTS.releaseClaimFi
         },
         releaseNotes: blockers.length === 0
             ? [
-                '公开 README / CHANGELOG / RELEASE / package metadata 未声明被 readiness 阻断的视频 parity 或默认视频后端能力。'
+                'The public README, changelog, release notes, and package metadata do not declare video parity or default video backend capabilities blocked by readiness.'
             ]
             : [
-                '公开发版文案包含 readiness 当前阻断的能力 claim；发版前必须移除或改写这些表述。'
+                'The public release copy includes capability claims currently blocked by readiness; remove or rewrite these statements before release.'
             ]
     };
 }
@@ -1036,7 +1036,7 @@ function summarizeAllenkReference(allenkRepoPath, { localHeadOverride = null, re
             referenceVideoDir: path.resolve('.artifacts/allenk-video')
         },
         releaseNotes: [
-            '当前比较基线绑定 allenk/GeminiWatermarkTool HEAD；如果 remote HEAD 改变，需要刷新对比。'
+            'The current comparison baseline is bound to the allenk/GeminiWatermarkTool HEAD; refresh the comparison if the remote HEAD changes.'
         ]
     };
 }
@@ -1229,8 +1229,8 @@ function summarizeAllenkV2Comparison(comparisonArtifact, {
             referenceHeadCheck
         },
         releaseNotes: [
-            'allenk V2 对比已汇总为独立 artifact；当前结论是图片 V2 36 只能 guarded 发布，视频 allenk parity 仍不可宣称。',
-            '如果 allenk 参考、视频 benchmark 或候选 gate 更新，应先刷新 compare:allenk-v2 再刷新 release:readiness。'
+            'The allenk V2 comparison has been summarized as a separate artifact; the current conclusion is that image V2 36 can only be released under guarded conditions, while video allenk parity remains unclaimable.',
+            'If the allenk reference, video benchmark, or candidate gate changes, refresh compare:allenk-v2 first and then refresh release:readiness.'
         ]
     };
 }
@@ -2194,7 +2194,7 @@ function parseCliArgs(argv) {
         } else if (arg === '--help' || arg === '-h') {
             parsed.help = true;
         } else {
-            throw new Error(`未知参数: ${arg}`);
+            throw new Error(`Unknown argument: ${arg}`);
         }
     }
     return parsed;
