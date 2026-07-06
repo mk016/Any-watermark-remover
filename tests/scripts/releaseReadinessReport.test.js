@@ -145,7 +145,7 @@ async function runExport() {
   });
 }
 function maybeApplyRelocatedReviewPreset() {
-  setStatus('${markReviewPreset ? '已应用迁移锚点复核预设。此预设用于人工复核，不是默认策略。' : '已应用迁移锚点预设。'}');
+  setStatus('${markReviewPreset ? 'The migrated anchor review preset has been applied. This preset is for human review and is not the default strategy.' : 'The migrated anchor preset has been applied.'}');
 }
 `, 'utf8');
     await writeFile(presetPath, `
@@ -227,7 +227,7 @@ async function writeReleaseVersionDocs(tempDir, version = '1.2.3') {
     const releaseEn = path.join(tempDir, 'RELEASE.md');
     const releaseZh = path.join(tempDir, 'RELEASE_zh.md');
     await writeFile(changelogEn, `# Changelog\n\n## ${version} - 2026-06-11\n\n- Ready.\n`, 'utf8');
-    await writeFile(changelogZh, `# 更新日志\n\n## ${version} - 2026-06-11\n\n- Ready.\n`, 'utf8');
+    await writeFile(changelogZh, `# Changelog\n\n## ${version} - 2026-06-11\n\n- Ready.\n`, 'utf8');
     await writeFile(
         releaseEn,
         'Update CHANGELOG.md and CHANGELOG_zh.md. Run pnpm release:preflight, which runs pnpm package:extension, pnpm release:quality-gate, pnpm release:goal-audit -- --fail-on-incomplete, and pnpm release:ci-check; the quality gate runs the internal comparison gate --fail-on-incomplete before pnpm release:readiness -- --fail-on-not-ready, then the CI check verifies GitHub Actions CI for the current HEAD before upload latest-extension.json. Follow the Release Claim Matrix: publish allowed, allowed-scoped, and allowed-safety-only rows; keep review-only, experiment-only, and forbidden rows out of public capability claims.\n',
@@ -235,7 +235,7 @@ async function writeReleaseVersionDocs(tempDir, version = '1.2.3') {
     );
     await writeFile(
         releaseZh,
-        '更新 CHANGELOG.md 和 CHANGELOG_zh.md。运行 pnpm release:preflight；它会运行 pnpm package:extension、pnpm release:quality-gate、pnpm release:goal-audit -- --fail-on-incomplete 和 pnpm release:ci-check；该 quality gate 会先运行内部对比 gate --fail-on-incomplete，再运行 pnpm release:readiness -- --fail-on-not-ready；随后 CI 检查会确认当前 HEAD 的 GitHub Actions CI 已通过，再上传 latest-extension.json。遵循 Release Claim Matrix：只发布 allowed、allowed-scoped 和 allowed-safety-only 行；review-only、experiment-only 和 forbidden 行不能写成公开能力声明。\n',
+        'Update CHANGELOG.md and CHANGELOG_zh.md. Run pnpm release:preflight, which runs pnpm package:extension, pnpm release:quality-gate, pnpm release:goal-audit -- --fail-on-incomplete, and pnpm release:ci-check; the quality gate runs the internal comparison gate --fail-on-incomplete before pnpm release:readiness -- --fail-on-not-ready, then the CI check verifies GitHub Actions CI for the current HEAD before uploading latest-extension.json. Follow the Release Claim Matrix: publish only the allowed, allowed-scoped, and allowed-safety-only rows; keep review-only, experiment-only, and forbidden rows out of public capability claims.\n',
         'utf8'
     );
     return {
