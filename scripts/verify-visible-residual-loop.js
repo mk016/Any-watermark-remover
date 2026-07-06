@@ -1604,7 +1604,7 @@ async function main() {
     );
     assertCondition(
         checks,
-        humanReviewReadmeText.includes('人工只编辑 `review-decisions.json`') &&
+        humanReviewReadmeText.includes('Humans should edit only `review-decisions.json`') &&
             humanReviewReadmeText.includes('review-input-contract.json') &&
             humanReviewReadmeText.includes('## Review Workflow') &&
             humanReviewReadmeText.includes('visible-residual:review-status') &&
@@ -1622,9 +1622,9 @@ async function main() {
             humanReviewReadmeText.includes('Do not add decision fields') &&
             humanReviewReadmeText.includes('alphaGain') &&
             humanReviewReadmeText.includes('profileVariant') &&
-            humanReviewReadmeText.includes('validation、admission 和正式 gold 迁移都会校验 contract provenance') &&
-            humanReviewReadmeText.includes('所有确认项完成前，`gold-manifest.json` 必须保持不生成') &&
-            !/[杩鑲纭锛€]/.test(humanReviewReadmeText),
+            humanReviewReadmeText.includes('validation, admission, and formal gold migration all validate contract provenance') &&
+            humanReviewReadmeText.includes('Before all confirmation items are complete, `gold-manifest.json` must remain ungenerated') &&
+            !/[^\x00-\x7F]/.test(humanReviewReadmeText),
         'human review README is readable and explains edit fields plus contract gates',
         {
             readmePath: humanReviewReadmePath,
