@@ -6,23 +6,23 @@ const DEFAULT_RENDER_SUMMARY_PATH = path.resolve('.artifacts/visible-residual-cr
 const DEFAULT_OUTPUT_PATH = path.resolve('.artifacts/visible-residual-crops/latest/review-manifest.json');
 
 const INITIAL_REVIEW_OVERRIDES = Object.freeze({
-    '样本2/Gemini_Generated_Image_a1d2x6a1d2x6a1d2.png': {
+    'sample2/Gemini_Generated_Image_a1d2x6a1d2x6a1d2.png': {
         verdict: 'trueVisibleResidual',
         confidence: 'high',
         residualClasses: ['positiveHalo', 'centerGrayShadow'],
         profileLine: '48px-large-margin',
         severity: 'medium',
         suggestedNextStep: 'investigate-48-large-margin-alpha-profile',
-        notes: 'after ROI raw 和 contrast 中可见稳定星形中心灰影；更像 profile/alpha under-subtraction，不像背景误报。'
+        notes: 'Stable star-shaped gray center shadow is visible in the after ROI raw and contrast views; it looks more like profile/alpha under-subtraction than a background false positive.'
     },
-    '样本2/Gemini_Generated_Image_6mry9p6mry9p6mry.png': {
+    'sample2/Gemini_Generated_Image_6mry9p6mry9p6mry.png': {
         verdict: 'trueVisibleResidual',
         confidence: 'high',
         residualClasses: ['positiveHalo', 'centerGrayShadow'],
         profileLine: '48px-large-margin',
         severity: 'medium',
         suggestedNextStep: 'investigate-48-large-margin-alpha-profile',
-        notes: '粉色高亮背景上仍能看到完整星形灰影；edge cleanup 已执行但中心仍残留。'
+        notes: 'A full star-shaped gray shadow is still visible on the pink highlighted background; edge cleanup has been run, but the center remains.'
     },
     '2026-06-09/2064246191004061696-source.png': {
         verdict: 'needsModelInvestigation',
@@ -31,7 +31,7 @@ const INITIAL_REVIEW_OVERRIDES = Object.freeze({
         profileLine: '36px-v2-small',
         severity: 'medium',
         suggestedNextStep: 'investigate-v2-36-forward-render-model',
-        notes: 'V2 36 edge cleanup 后边缘指标通过，但中心灰影仍可见；不应继续增强 edge cleanup。'
+        notes: 'After V2 36 edge cleanup, the edge metrics pass, but the center gray shadow is still visible; do not continue to strengthen edge cleanup.'
     },
     '2026-06-08/2064131568774942720-source.png': {
         verdict: 'contentCollision',
@@ -40,7 +40,7 @@ const INITIAL_REVIEW_OVERRIDES = Object.freeze({
         profileLine: '96px-standard',
         severity: 'medium',
         suggestedNextStep: 'mark-gold-tolerance-before-algorithm-change',
-        notes: '残影与漫画线条、对白框和文字边缘重叠；有可见水印形状，但需要 gold 标注区分失败与可容忍内容碰撞。'
+        notes: 'The residual overlaps with manga lines, speech bubbles, and text edges; a visible watermark shape exists, but gold labeling is needed to distinguish failure from tolerable content collision.'
     },
     '2026-06-08/2064131957880524800-source.png': {
         verdict: 'contentCollision',
@@ -49,7 +49,7 @@ const INITIAL_REVIEW_OVERRIDES = Object.freeze({
         profileLine: '96px-standard',
         severity: 'medium',
         suggestedNextStep: 'mark-gold-tolerance-before-algorithm-change',
-        notes: '与 2064131568774942720 同类，可能是重复/近重复样本；先归为内容碰撞，不单独推动算法调整。'
+        notes: 'It is similar to 2064131568774942720 and may be a duplicate or near-duplicate sample; classify it as a content collision first and do not push algorithm changes on its own.'
     },
     '2026-06-09/2064190955333881856-source.png': {
         verdict: 'contentCollision',
@@ -58,7 +58,7 @@ const INITIAL_REVIEW_OVERRIDES = Object.freeze({
         profileLine: '192px-scaled-anchor',
         severity: 'low-medium',
         suggestedNextStep: 'mark-gold-tolerance-before-algorithm-change',
-        notes: '水印区域压在大号黑字和高对比背景上；指标为 positive halo，但肉眼判断强依赖内容结构。'
+        notes: 'The watermark region sits over large bold text and high-contrast backgrounds; the metric is a positive halo, but the visual judgment strongly depends on content structure.'
     }
 });
 
@@ -179,7 +179,7 @@ function buildReviewManifest(renderSummary, { renderSummaryPath, renderSummarySh
                 'pending'
             ],
             confidence: ['high', 'medium', 'low', 'unknown'],
-            note: 'codex-initial-pass 是预填判断，不是正式 gold；进入 gold manifest 前需要人工确认。'
+            note: 'codex-initial-pass is a prefilled judgment, not formal gold; it requires human confirmation before entering the gold manifest.'
         },
         summary: {
             metricPassVisibleReviewed: metricPassVisible.length,
@@ -205,10 +205,10 @@ function buildReviewManifest(renderSummary, { renderSummaryPath, renderSummarySh
             humanReviewNext: visibleTopPending.slice(0, 10)
         },
         nextActions: [
-            '人工确认 metricPassVisible 的 6 条预填判断。',
-            '把 trueVisibleResidual 与 needsModelInvestigation 样本归入模型研究队列。',
-            '把 contentCollision 样本先转为 gold 容忍度讨论，不直接推动算法调整。',
-            '确认后再把稳定字段迁移到正式样本 gold manifest。'
+            'Manually confirm the 6 prefilled metricPassVisible judgments.',
+            'Move trueVisibleResidual and needsModelInvestigation samples into the model research queue.',
+            'Move contentCollision samples to gold tolerance discussion first instead of directly pushing algorithm adjustments.',
+            'After confirmation, move the stable fields to the formal sample gold manifest.'
         ]
     };
 }
