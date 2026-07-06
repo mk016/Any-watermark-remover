@@ -438,9 +438,9 @@ function createMarkdown({ outputDir, queues, sheets, currentMonitorPath, baselin
     lines.push('');
     lines.push('## Review Guidance');
     lines.push('');
-    lines.push('- `perfectLost`: 判断当前 damage / texture flag 是否肉眼真实成立。');
-    lines.push('- `severeDefectIntroduced`: 判断严重瑕疵是否真实损伤，以及是否集中在某类策略。');
-    lines.push('- `passGained`: 判断新增通过样本是否值得用轻微瑕疵换覆盖率。');
+    lines.push('- `perfectLost: determine whether the current damage / texture flag is visibly real.');
+    lines.push('- `severeDefectIntroduced: determine whether major defects are real damage and whether they cluster around a certain strategy.');
+    lines.push('- `passGained: determine whether newly passing samples are worth exchanging slight defects for coverage.');
     lines.push('');
     return `${lines.join('\n')}\n`;
 }
