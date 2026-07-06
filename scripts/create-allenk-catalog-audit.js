@@ -74,7 +74,7 @@ export function parseAllenkImageCatalogFromSource(source = '') {
 
 function textHasResolution(text, resolution) {
     const [w, h] = resolution.split('x');
-    return new RegExp(`${w}\\s*[x×脳]\\s*${h}`).test(text);
+    return new RegExp(`${w}\\s*[x]\\s*${h}`).test(text);
 }
 
 export function parseAllenkVideoPriorsFromReadme(readme = '') {
@@ -93,7 +93,7 @@ export function parseAllenkVideoPriorsFromReadme(readme = '') {
         }));
 
     const known720pVariants = [];
-    if (/720p-1|standard/i.test(readme) && /48\s*[x×脳]\s*48/i.test(readme) && /72\s*,\s*72/.test(readme)) {
+    if (/720p-1|standard/i.test(readme) && /48\s*[x]\s*48/i.test(readme) && /72\s*,\s*72/.test(readme)) {
         known720pVariants.push({
             id: 'allenk-video-720p-1-standard',
             sourceLevel: 'readme-prior',
@@ -102,7 +102,7 @@ export function parseAllenkVideoPriorsFromReadme(readme = '') {
             marginBottom: 72
         });
     }
-    if (/720p-2|compact/i.test(readme) && /44\s*[x×脳]\s*44/i.test(readme) && /29\s*,\s*40/.test(readme)) {
+    if (/720p-2|compact/i.test(readme) && /44\s*[x]\s*44/i.test(readme) && /29\s*,\s*40/.test(readme)) {
         known720pVariants.push({
             id: 'allenk-video-720p-2-compact',
             sourceLevel: 'readme-prior',
