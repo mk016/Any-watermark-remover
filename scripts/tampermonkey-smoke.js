@@ -191,8 +191,8 @@ function shouldSkipFreshnessPreflightError(error) {
   const message = typeof error?.message === 'string'
     ? error.message
     : String(error ?? '');
-  return message.includes('未找到已打开的 Tampermonkey 编辑器页面') ||
-    message.includes('Tampermonkey 编辑器页面中没有可读取的 CodeMirror 脚本源码') ||
+  return message.includes('No open Tampermonkey editor page was found') ||
+    message.includes('The Tampermonkey editor page does not contain readable CodeMirror script source') ||
     message.includes('ECONNREFUSED') ||
     message.includes('connect ECONNREFUSED') ||
     message.includes('Execution context was destroyed') ||
@@ -265,7 +265,7 @@ async function launchChromeWithProfile({ profileDir, proxyServer, port, targetUr
   mkdirSync(profileDir, { recursive: true });
   const executablePath = resolveChromeExecutablePath(process.env);
   if (!executablePath) {
-    throw new Error('未找到可用的 Chrome 可执行文件，请设置 GWR_DEBUG_EXECUTABLE_PATH');
+    throw new Error('No usable Chrome executable was found; set GWR_DEBUG_EXECUTABLE_PATH');
   }
 
   const launchSpec = buildChromeLaunchSpec({
@@ -311,18 +311,18 @@ async function launchChromeWithProfile({ profileDir, proxyServer, port, targetUr
 }
 
 function printSetupInstructions({ profileDir, baseUrl }) {
-  console.log(`固定 Profile: ${profileDir}`);
+  console.log(`Fixed profile: ${profileDir}`);
   console.log(`Chrome Web Store: ${TM_STORE_URL}`);
-  console.log(`本地 Probe 页面: ${baseUrl}/tampermonkey-worker-probe.html?setup=1`);
-  console.log(`本地 Probe Userscript: ${baseUrl}/tampermonkey-worker-probe.user.js`);
-  console.log('请在这个固定 profile 里手动完成以下步骤:');
-  console.log('1. 用 pnpm probe:tm:profile 打开正常 Chrome，而不是自动化窗口');
-  console.log('2. 安装 Tampermonkey');
-  console.log('3. 如 Chrome 提示，请开启 Developer mode / Allow User Scripts');
-  console.log('4. 打开本地 .user.js 地址并安装 probe 脚本');
-  console.log('5. 保留这个 profile，后续自动化都复用它');
-  console.log('注意: 自动化窗口会显示“Chrome 正受到自动测试软件的控制”，商店安装会被禁用。');
-  console.log('完成后按 Ctrl+C 退出 setup 模式。');
+  console.log(`Local probe page: ${baseUrl}/tampermonkey-worker-probe.html?setup=1`);
+  console.log(`Local probe userscript: ${baseUrl}/tampermonkey-worker-probe.user.js`);
+  console.log('Please complete the following steps manually in this fixed profile:');
+  console.log('1. Use pnpm probe:tm:profile to open normal Chrome instead of an automated window');
+  console.log('2. Install Tampermonkey');
+  console.log('3. If Chrome prompts you, enable Developer mode / Allow User Scripts');
+  console.log('4. Open the local .user.js address and install the probe script');
+  console.log('5. Keep this profile so later automation can reuse it');
+  console.log('Note: the automated window will show “Chrome is being controlled by automated test software”, and store installs will be disabled.');
+  console.log('After that, press Ctrl+C to exit setup mode.');
 }
 
 async function waitForProbeCompletion(page, timeoutMs = 15000) {
@@ -424,7 +424,7 @@ export async function runTampermonkeySmoke(options = {}) {
 
     if (!report.userscriptDetected) {
       throw new Error(
-        `未检测到 Tampermonkey probe userscript。先运行 "pnpm probe:tm:setup" 并在固定 profile ${profileDir} 中手动安装 Tampermonkey 和本地 probe 脚本。`
+        `Tampermonkey probe userscript was not detected. First run "pnpm probe:tm:setup" and install Tampermonkey plus the local probe script in the fixed profile ${profileDir}.`
       );
     }
     if (report.pageDirectBlobWorker?.ok !== false) {
