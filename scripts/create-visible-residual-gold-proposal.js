@@ -234,7 +234,7 @@ function summarizeAdmission({
                 directAlphaGainCouldClearVisible: alphaSweepCleared,
                 total: alphaSweep.summary?.total ?? null
             },
-            reason: '固定几何下单纯 alphaGain 不能清除模型队列可见残留。'
+            reason: 'Under fixed geometry, alphaGain alone cannot clear visible residuals in the model queue.'
         },
         alphaProfileMidBoost124: {
             decision: improvedRatio >= 0.8 && clearedRatio >= 0.6
@@ -249,15 +249,15 @@ function summarizeAdmission({
                 clearedRatio: round(clearedRatio, 4),
                 hardRejectBest: generalized.hardRejectBest ?? null
             },
-            reason: 'mid-boost-1.24 有诊断信号，但泛化不足且会在部分样本放大 shape/texture 风险。'
+            reason: 'mid-boost-1.24 has diagnostic signals, but generalization is insufficient and it amplifies shape/texture risk on some samples.'
         },
         productionChangeAllowed: false,
         productionChangeGate: [
-            '必须先完成人工确认 review manifest',
-            '必须有正式 gold manifest 字段',
-            '必须在目标 cluster 上改善且不恶化 contentCollision/backgroundStructure',
-            '必须保留 before/after/contrast sheet 证据',
-            '必须通过测试和 benchmark'
+            'Human confirmation of the review manifest must be completed first',
+            'There must be formal gold manifest fields',
+            'It must improve on the target cluster without worsening contentCollision/backgroundStructure',
+            'The before/after/contrast sheet evidence must be retained',
+            'It must pass tests and benchmarks'
         ]
     };
 }
