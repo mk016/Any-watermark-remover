@@ -75,11 +75,11 @@ export async function loadVideoCropBenchmarkManifest(manifestPath = DEFAULT_MANI
 
 export function normalizeVideoBenchmarkCase(caseItem, { manifestDir = process.cwd() } = {}) {
     if (!isObject(caseItem)) {
-        throw new Error('视频 benchmark case 必须是对象');
+        throw new Error('The video benchmark case must be an object');
     }
     const id = String(caseItem.id || '').trim();
     if (!id) {
-        throw new Error('视频 benchmark case 缺少 id');
+        throw new Error('The video benchmark case is missing an id');
     }
 
     return {
@@ -138,7 +138,7 @@ export function resolveBenchmarkPrimaryCandidate(renderResult, caseItem) {
 
 export function calculateRawDiffMetrics(leftData, rightData, { width, height, threshold = 2 } = {}) {
     if (!leftData || !rightData || leftData.length !== rightData.length) {
-        throw new Error('左右图像数据尺寸不一致，无法计算 diff 指标');
+        throw new Error('The left and right image data dimensions do not match, so the diff metrics cannot be computed');
     }
     const pixelCount = Number.isFinite(width) && Number.isFinite(height)
         ? width * height
