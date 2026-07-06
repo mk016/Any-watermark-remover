@@ -133,23 +133,23 @@ Download the new zip, replace the extracted folder, then click Reload on the ext
 The extension runs on Gemini pages only. It processes generated image previews, copy actions, and download actions in the browser. It does not collect accounts, prompts, chats, or personal data. It may request Gemini and Googleusercontent image assets so the image can be processed locally.
 `;
 
-  const chinese = `# Gemini Watermark Remover Chrome 插件 v${version}
+  const chinese = `# Gemini Watermark Remover Chrome extension v${version}
 
-## 安装
+## Install
 
-1. 解压这个 zip 文件。
-2. 打开 \`chrome://extensions\`。
-3. 开启“开发者模式”。
-4. 点击“加载已解压的扩展程序”。
-5. 选择解压后的 \`${packageBaseName}\` 文件夹。
+1. Extract this zip file.
+2. Open \`chrome://extensions\`.
+3. Enable Developer mode.
+4. Click Load unpacked.
+5. Select the extracted \`${packageBaseName}\` folder.
 
-## 更新
+## Update
 
-下载新版 zip，替换已解压的文件夹，然后在扩展卡片上点击“重新加载”。
+Download the new zip, replace the extracted folder, then click Reload on the extension card.
 
-## 隐私说明
+## Privacy
 
-插件只在 Gemini 页面运行，会在浏览器内处理生成图片的预览、复制和下载动作。插件不收集账号、提示词、聊天内容或个人数据。为完成本地处理，插件可能会请求 Gemini 和 Googleusercontent 的图片资源。
+The extension runs on Gemini pages only and processes generated image previews, copy actions, and download actions in the browser. It does not collect accounts, prompts, chat content, or personal data. To complete local processing, it may request Gemini and Googleusercontent image assets.
 `;
 
   return { english, chinese };
