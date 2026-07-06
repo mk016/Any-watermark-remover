@@ -1093,7 +1093,7 @@ async function main() {
     });
     const report = {
         generatedAt: new Date().toISOString(),
-        objective: '建立 visible residual 的可复现审阅、分组、gold 候选和算法准入闭环；在没有人工确认前，不把任何 alpha/profile 变体生产化。',
+        objective: 'Establish a reproducible review, grouping, gold-candidate, and algorithm-admission loop for visible residuals; do not promote any alpha/profile variant to production before human confirmation.',
         status: overallStatus(requirements),
         policy: {
             reportOnly: true,
