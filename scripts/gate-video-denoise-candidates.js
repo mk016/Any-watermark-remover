@@ -308,7 +308,7 @@ export function createVideoDenoiseCandidateGateReport({
     requiredLayerCount = null
 }) {
     if (!Array.isArray(reports) || reports.length === 0) {
-        throw new Error('至少需要提供一个 --reports JSON');
+        throw new Error('At least one --reports JSON must be provided');
     }
     const rawLayers = reports.map(({ report, reportPath }) => extractCandidates(report, reportPath));
     const layers = applyControlAdjustments(rawLayers, controlReports);
@@ -498,7 +498,7 @@ function parseCliArgs(argv) {
         } else if (arg === '--help' || arg === '-h') {
             parsed.help = true;
         } else {
-            throw new Error(`未知参数: ${arg}`);
+            throw new Error(`Unknown argument: ${arg}`);
         }
     }
 
