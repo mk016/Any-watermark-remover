@@ -18,7 +18,7 @@ import {
 } from '../../src/userscript/downloadHook.js';
 import { isGeminiOriginalAssetUrl } from '../../src/userscript/urlUtils.js';
 
-function createButtonLikeTarget(label = '下载完整尺寸的图片') {
+function createButtonLikeTarget(label = 'Download full-size image') {
   const button = {
     getAttribute(name) {
       if (name === 'aria-label') {
@@ -503,7 +503,7 @@ test('isGeminiDownloadActionTarget should recognize copy and download buttons bu
     closest() {
       return {
         getAttribute(name) {
-          return name === 'aria-label' ? '下载完整尺寸的图片' : '';
+          return name === 'aria-label' ? 'Download full-size image' : '';
         },
         textContent: ''
       };
@@ -525,7 +525,7 @@ test('isGeminiDownloadActionTarget should recognize copy and download buttons bu
     closest() {
       return {
         getAttribute(name) {
-          return name === 'aria-label' ? '分享图片' : '';
+          return name === 'aria-label' ? 'Share image' : '';
         },
         textContent: ''
       };
@@ -549,7 +549,7 @@ test('resolveGeminiActionKind should distinguish copy and download gestures from
     closest() {
       return {
         getAttribute(name) {
-          return name === 'aria-label' ? '下载完整尺寸的图片' : '';
+          return name === 'aria-label' ? 'Download full-size image' : '';
         },
         textContent: ''
       };
@@ -560,7 +560,7 @@ test('resolveGeminiActionKind should distinguish copy and download gestures from
     closest() {
       return {
         getAttribute(name) {
-          return name === 'aria-label' ? '分享图片' : '';
+          return name === 'aria-label' ? 'Share image' : '';
         },
         textContent: ''
       };
@@ -591,7 +591,7 @@ test('createGeminiDownloadIntentGate should arm only for explicit copy or downlo
       closest() {
         return {
           getAttribute(name) {
-            return name === 'aria-label' ? '分享图片' : '';
+            return name === 'aria-label' ? 'Share image' : '';
           },
           textContent: ''
         };
@@ -605,7 +605,7 @@ test('createGeminiDownloadIntentGate should arm only for explicit copy or downlo
       closest() {
         return {
           getAttribute(name) {
-            return name === 'aria-label' ? '复制图片' : '';
+            return name === 'aria-label' ? 'Copy image' : '';
           },
           textContent: ''
         };
@@ -651,7 +651,7 @@ test('createGeminiDownloadIntentGate should retain asset ids for the latest expl
       closest() {
         return {
           getAttribute(name) {
-            return name === 'aria-label' ? '下载完整尺寸的图片' : '';
+            return name === 'aria-label' ? 'Download full-size image' : '';
           },
           textContent: ''
         };
@@ -886,7 +886,7 @@ test('createGeminiDownloadIntentGate should retain explicit download intent for 
       closest() {
         return {
           getAttribute(name) {
-            return name === 'aria-label' ? '下载完整尺寸的图片' : '';
+            return name === 'aria-label' ? 'Download full-size image' : '';
           },
           textContent: ''
         };
@@ -1125,7 +1125,7 @@ test('extractGeminiAssetBindingsFromResponseText should pair response asset ids 
 });
 
 test('extractGeminiAssetBindingsFromResponseText should still recover a usable binding when history tuples and content blocks are offset', () => {
-  const responseText = ')]}\'\n123\n[["wrb.fr","hNvQHb","[[[[\\\"c_cdec91057e5fdcaf\\\",\\\"r_134f73283381ab82\\\",\\\"rc_e48e309fb05102e2\\\"],[\\\"c_cdec91057e5fdcaf\\\",\\\"r_8564c2370ec24b62\\\",\\\"rc_1dfd19ae1152c42a\\\"],[[\\\"性感，白皙，清纯\\\"],1,null,0,\\\"fbb127bbb056c959\\\",0,14,null,false,null,[]],[[[\\\"rc_e48e309fb05102e2\\\",[\\\"http://googleusercontent.com/image_generation_content/2\\\"],[null,null,null,null,[null,null,8]],null,null,null,null,null,[2],\\\"und\\\",null,null,[null,null,null,null,null,null,[3],[[[[null,null,null,[null,1,\\\"8289315647847911722.png\\\",\\\"https:\\\\/\\\\/lh3.googleusercontent.com\\\\/gg\\\\/AMW1TPoUzF0DJQYiXY7_Zpzxr1R77yq-C47kmFP35SHjv1jiPds5Sim4iy_N2Hho7mEicd7kf5vfjCCjCpn1c7IbqVbvkahV2G3Ciea0Z50SIDu_uL0JWCqI5OQRUZQnP99am2fIo41kPSPjQxRl7N_nVKHrtSn6Tgks6pBGfguzfdBfFTTrhsLJXMfC3ZehqcPKBj7X3yhgthbJCBMqo7VuqGkNNMaUawRdqEKGD0AXksBQN6FBSj1cy8sHPyApHK-XLMmQnb3BNwsayLUetPB3gkaw-qY-qTmjaN_zXHeJzW4_3YvB1aQ5hO-33kmP896VfyWQLiWeuInMem2cooiP54zt\\\"]]]]]]]]]",null,null,null,"generic"]]';
+  const responseText = ')]}\'\n123\n[["wrb.fr","hNvQHb","[[[[\\\"c_cdec91057e5fdcaf\\\",\\\"r_134f73283381ab82\\\",\\\"rc_e48e309fb05102e2\\\"],[\\\"c_cdec91057e5fdcaf\\\",\\\"r_8564c2370ec24b62\\\",\\\"rc_1dfd19ae1152c42a\\\"],[[\\\"Stylish, fair, and pure\\\"],1,null,0,\\\"fbb127bbb056c959\\\",0,14,null,false,null,[]],[[[\\\"rc_e48e309fb05102e2\\\",[\\\"http://googleusercontent.com/image_generation_content/2\\\"],[null,null,null,null,[null,null,8]],null,null,null,null,null,[2],\\\"und\\\",null,null,[null,null,null,null,null,null,[3],[[[[null,null,null,[null,1,\\\"8289315647847911722.png\\\",\\\"https:\\\\/\\\\/lh3.googleusercontent.com\\\\/gg\\\\/AMW1TPoUzF0DJQYiXY7_Zpzxr1R77yq-C47kmFP35SHjv1jiPds5Sim4iy_N2Hho7mEicd7kf5vfjCCjCpn1c7IbqVbvkahV2G3Ciea0Z50SIDu_uL0JWCqI5OQRUZQnP99am2fIo41kPSPjQxRl7N_nVKHrtSn6Tgks6pBGfguzfdBfFTTrhsLJXMfC3ZehqcPKBj7X3yhgthbJCBMqo7VuqGkNNMaUawRdqEKGD0AXksBQN6FBSj1cy8sHPyApHK-XLMmQnb3BNwsayLUetPB3gkaw-qY-qTmjaN_zXHeJzW4_3YvB1aQ5hO-33kmP896VfyWQLiWeuInMem2cooiP54zt\\\"]]]]]]]]]",null,null,null,"generic"]]';
 
   assert.deepEqual(extractGeminiAssetBindingsFromResponseText(responseText), [{
     discoveredUrl: 'https://lh3.googleusercontent.com/gg/AMW1TPoUzF0DJQYiXY7_Zpzxr1R77yq-C47kmFP35SHjv1jiPds5Sim4iy_N2Hho7mEicd7kf5vfjCCjCpn1c7IbqVbvkahV2G3Ciea0Z50SIDu_uL0JWCqI5OQRUZQnP99am2fIo41kPSPjQxRl7N_nVKHrtSn6Tgks6pBGfguzfdBfFTTrhsLJXMfC3ZehqcPKBj7X3yhgthbJCBMqo7VuqGkNNMaUawRdqEKGD0AXksBQN6FBSj1cy8sHPyApHK-XLMmQnb3BNwsayLUetPB3gkaw-qY-qTmjaN_zXHeJzW4_3YvB1aQ5hO-33kmP896VfyWQLiWeuInMem2cooiP54zt=s0',
@@ -1141,7 +1141,7 @@ test('extractGeminiAssetBindingsFromResponseText should align response order wit
   const historyPayload = [[
     ['c_cdec91057e5fdcaf', 'r_8a95cf3da7dcab7d'],
     ['c_cdec91057e5fdcaf', 'r_19c04baf39a68931', 'rc_45d85da14e2d5ef4'],
-    [['我喜欢少女'], 1, null, 0, 'fbb127bbb056c959', 0, 14, null, false, null, []],
+    [['I like girls'], 1, null, 0, 'fbb127bbb056c959', 0, 14, null, false, null, []],
     [[[
       'rc_33808c0f8008f500',
       ['http://googleusercontent.com/image_generation_content/4'],
