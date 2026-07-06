@@ -34,7 +34,7 @@ export function parseTimestampList(value) {
         .map((item) => toFiniteNumber(String(item).trim()))
         .filter((item) => item !== null && item >= 0);
     if (!timestamps.length) {
-        throw new Error('至少需要一个有效时间点，例如 --timestamps 1,3,5');
+        throw new Error('At least one valid timestamp is required, for example --timestamps 1,3,5');
     }
     return timestamps;
 }
@@ -59,7 +59,7 @@ export function parseCropBox(value) {
     if (value == null || value === '') return null;
     const parts = String(value).trim().split(/[,\s]+/).map((part) => toFiniteNumber(part.trim()));
     if (parts.length !== 4 || parts.some((part) => part === null)) {
-        throw new Error('裁剪区域格式应为 --crop x,y,width,height');
+        throw new Error('Crop area format should be --crop x,y,width,height');
     }
     return normalizeCropBox({
         left: parts[0],
@@ -75,7 +75,7 @@ export function normalizeCropBox(cropBox, bounds = null) {
     const width = Math.round(cropBox.width);
     const height = Math.round(cropBox.height);
     if (![left, top, width, height].every(Number.isFinite) || width <= 0 || height <= 0) {
-        throw new Error('裁剪区域必须是正数尺寸');
+        throw new Error('Crop area dimensions must be positive');
     }
 
     if (!bounds) return { left, top, width, height };
@@ -94,7 +94,7 @@ export function normalizeCropBox(cropBox, bounds = null) {
 
 export function resolveDefaultVideoCropBox({ width, height, padding = DEFAULT_PADDING } = {}) {
     if (!Number.isFinite(width) || !Number.isFinite(height) || width <= 0 || height <= 0) {
-        throw new Error('缺少有效的视频尺寸，无法推断裁剪区域');
+        throw new Error('Missing valid video dimensions; cannot infer the crop area');
     }
 
     const candidates = resolveVideoWatermarkCandidates(width, height);
@@ -178,7 +178,7 @@ async function probeVideo(videoPath) {
     const parsed = JSON.parse(stdout);
     const stream = parsed.streams?.[0];
     if (!stream) {
-        throw new Error(`无法读取视频流：${videoPath}`);
+        throw new Error(`Unable to read video stream：${videoPath}`);
     }
     return {
         width: Number(stream.width),
@@ -304,10 +304,10 @@ export async function renderVideoCropSheet({
     caseNote = null
 } = {}) {
     if (!originalPath) {
-        throw new Error('缺少原始视频路径：--original input.mp4');
+        throw new Error('Missing original video path: --original input.mp4');
     }
     if (!currentPath && !referencePath && !allowOriginalOnly) {
-        throw new Error('至少提供 --current 或 --reference 中的一个对比视频');
+        throw new Error('Provide at least one comparison video via --current or --reference');
     }
 
     const resolvedOutputPath = path.resolve(outputPath);
