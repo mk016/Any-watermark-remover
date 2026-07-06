@@ -74,11 +74,11 @@ test('README files should document the active Chrome extension release flow with
   const chromeWebStoreUrl =
     'https://chromewebstore.google.com/detail/gemini-watermark-remover/cjlmnfcfnofnglkphbcdclbpimdjkmdf';
 
-  assert.match(readmeZh, /### Chrome 插件/);
+  assert.match(readmeZh, /### Chrome Extension/);
   assert.match(readmeZh, new RegExp(chromeWebStoreUrl.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
-  assert.match(readmeZh, /添加至 Chrome/);
+  assert.match(readmeZh, /Add to Chrome/);
   assert.match(readmeZh, /GitHub Releases/);
-  assert.match(readmeZh, /备用下载入口/);
+  assert.match(readmeZh, /Alternate download entry/);
   assert.match(readmeZh, /gemini-watermark-remover-extension-v\*\.zip/);
   assert.match(readmeEn, /### Chrome Extension/);
   assert.match(readmeEn, new RegExp(chromeWebStoreUrl.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
