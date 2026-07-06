@@ -1045,7 +1045,7 @@ test('create-visible-residual-human-review-pack should preserve human input file
         reviewInputContract.decisionSets.find((set) => set.name === 'metricPassVisible').expectedCount,
         1
     );
-    assert.match(readme, /人工只编辑 `review-decisions\.json`/);
+    assert.match(readme, /Humans should edit only `review-decisions\.json`/);
     assert.match(readme, /## Review Workflow/);
     assert.match(readme, /visible-residual:review-status/);
     assert.match(readme, /review-handoff\.md/);
@@ -1058,9 +1058,9 @@ test('create-visible-residual-human-review-pack should preserve human input file
     assert.match(readme, /reviewBatches/);
     assert.match(readme, /goldCandidateReviewBatches/);
     assert.match(readme, /Fill `gold-candidate-confirmations\.json`/);
-    assert.match(readme, /validation、admission 和正式 gold 迁移都会校验 contract provenance/);
-    assert.match(readme, /所有确认项完成前，`gold-manifest\.json` 必须保持不生成/);
-    assert.doesNotMatch(readme, /杩|鑲|纭|锛|€/);
+    assert.match(readme, /validation, admission, and formal gold migration all validate contract provenance/);
+    assert.match(readme, /Before all confirmation items are complete, `gold-manifest\.json` must remain ungenerated/);
+    assert.doesNotMatch(readme, /[^\x00-\x7F]/);
     assert.equal(preservedDecisions.decisions[0].humanVerdict, 'acceptableResidual');
     assert.equal(preservedDecisions.decisions[0].humanConfidence, 'medium');
     assert.equal(preservedDecisions.decisions[0].humanNotes, 'Manual review in progress.');
@@ -4335,7 +4335,7 @@ test('create-visible-residual-goal-audit-report should summarize objective state
     assert.equal(report.policy.writesFormalGoldManifest, false);
     assert.equal(report.policy.writesProductionAlgorithm, false);
     assert.equal(report.status, 'human-gated-incomplete');
-    assert.match(report.objective, /建立 visible residual 的可复现审阅/);
+    assert.match(report.objective, /Establish reproducible review for visible residual/);
     assert.equal(report.summary.unconfirmedCount, 3);
     assert.equal(report.summary.goldCandidateUnconfirmedCount, 1);
     assert.equal(report.summary.reviewManifestSha256, reviewManifestSha256);
