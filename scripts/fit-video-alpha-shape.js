@@ -168,7 +168,7 @@ function clampAlpha(value) {
 
 function buildBaseVideoAlphaMap(size) {
     const alpha96 = getEmbeddedAlphaMap(VIDEO_ALPHA_PROFILE) || getEmbeddedAlphaMap(96);
-    if (!alpha96) throw new Error('缺少视频 alpha profile');
+    if (!alpha96) throw new Error('Missing video alpha profile');
     return size === 96 ? new Float32Array(alpha96) : resizeAlphaMapArea(alpha96, 96, size);
 }
 
@@ -763,12 +763,12 @@ function parseArgs(argv) {
         } else if (arg === '--preset') {
             parsed.preset = argv[++i] || parsed.preset;
             if (!CASE_PRESETS[parsed.preset]) {
-                throw new Error(`未知 preset: ${parsed.preset}`);
+                throw new Error(`Unknown preset: ${parsed.preset}`);
             }
         } else if (arg === '--help' || arg === '-h') {
             parsed.help = true;
         } else {
-            throw new Error(`未知参数: ${arg}`);
+            throw new Error(`Unknown argument: ${arg}`);
         }
     }
     return parsed;
