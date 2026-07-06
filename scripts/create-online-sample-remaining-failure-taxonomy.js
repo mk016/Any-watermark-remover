@@ -62,21 +62,21 @@ function classifyPriority(cluster) {
 
 function followUp(cluster) {
     if (cluster.bucket === 'missed-detection') {
-        return '先复核是否真实 Gemini 水印；代表 sweep 没有生产级证据安全候选时，不应直接放宽检测阈值。';
+        return 'First verify whether the watermark is a real Gemini watermark; when the sweep has no production-grade evidence for a safe candidate, do not relax the detection threshold directly.';
     }
     if (cluster.anchor.startsWith('96/192/192')) {
-        return '继续跟 192 边距大图的 alpha 边缘形状，而不是把 default-alpha 当通用答案。';
+        return 'Continue following the alpha edge shape of the 192-margin large images instead of treating default-alpha as a universal answer.';
     }
     if (cluster.anchor.startsWith('48/96/96')) {
-        return '优先检查 48px 大边距样本的 alpha profile / edge cleanup 是否仍有亮边残留。';
+        return 'Prioritize checking whether 48px large-margin samples still have bright-edge residuals in the alpha profile / edge cleanup path.';
     }
     if (cluster.anchor.startsWith('48/32/32')) {
-        return '检查 canonical 48px 小边距在高纹理背景下的 located-aggressive 是否过冲或欠抑制。';
+        return 'Check whether the canonical 48px small-margin case is over- or under-suppressed in high-texture backgrounds under located-aggressive.';
     }
     if (cluster.bucket === 'weak-suppression') {
-        return '核对定位证据是否足够强；如果原始证据弱，应进入人工/评估层而非自动增强。';
+        return 'Verify whether the localization evidence is strong enough; if the original evidence is weak, route it to the human/evaluation layer instead of automatically strengthening it.';
     }
-    return '保留为单例追踪，等同类样本增加后再改生产路径。';
+    return 'Keep it as a singleton trace and revisit the production path once similar samples increase.';
 }
 
 function summarizeCluster(records) {
