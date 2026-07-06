@@ -207,14 +207,14 @@ test('installed skill runtime should fall back to pnpm dlx when repo-local bin i
 test('README (zh) should prioritize section headings for online tool, Chrome extension, userscript, Skill, and CLI before SDK', async () => {
   const readme = await readFile(new URL('../../README_zh.md', import.meta.url), 'utf8');
   const headings = extractMarkdownHeadingLines(readme);
-  const onlineIndex = headingOrderIndex(headings, '### 在线 Gemini 去水印工具（推荐）');
-  const extensionIndex = headingOrderIndex(headings, '### Chrome 插件');
-  const userscriptIndex = headingOrderIndex(headings, '### 油猴脚本');
+  const onlineIndex = headingOrderIndex(headings, '### Online Gemini Watermark Remover (Recommended)');
+  const extensionIndex = headingOrderIndex(headings, '### Chrome Extension');
+  const userscriptIndex = headingOrderIndex(headings, '### Userscript');
   const skillIndex = headingOrderIndex(headings, '### Skill');
   const cliIndex = headingOrderIndex(headings, '### CLI');
-  const developerPreviewIndex = headingOrderIndex(headings, '### 开发者预览');
-  const developmentIndex = headingOrderIndex(headings, '## 开发');
-  const sdkIndex = headingOrderIndex(headings, '## SDK 用法（高级 / 内部）');
+  const developerPreviewIndex = headingOrderIndex(headings, '### Developer Preview');
+  const developmentIndex = headingOrderIndex(headings, '## Development');
+  const sdkIndex = headingOrderIndex(headings, '## SDK Usage (Advanced / Internal)');
 
   assert.ok(onlineIndex >= 0);
   assert.ok(extensionIndex > onlineIndex);
