@@ -526,8 +526,8 @@ async function runDetection() {
     const jobId = ++state.jobId;
     state.running = true;
     updateButtons();
-    setProgress(0.05, '检测中');
-    setStatus('正在抽帧检测右下角水印...');
+    setProgress(0.05, 'Detecting');
+    setStatus('Scanning frames to detect the bottom-right watermark...');
 
     try {
         await yieldToBrowserFrame();
@@ -542,10 +542,10 @@ async function runDetection() {
         state.detection = result.detection;
         renderMetadata(result.metadata);
         renderDetection(result.detection);
-        setProgress(1, result.detection.isConfident ? '检测完成' : '低置信');
+        setProgress(1, result.detection.isConfident ? 'Detection complete' : 'Low confidence');
         const preset = applyAutomaticPreset(result.detection, result.metadata, { silent: true });
         if (preset.id === 'relocated-review') {
-            setStatus('检测完成，导出时会使用 AI 去水印。', result.detection.isConfident ? 'success' : 'warn');
+            setStatus('Detection complete; AI watermark removal will be used during export.', result.detection.isConfident ? 'success' : 'warn');
         } else {
             setStatus(result.detection.isConfident ? 'Detection complete; AI watermark removal will be used during export.' : 'Detection confidence is low, but AI export is still available.', result.detection.isConfident ? 'success' : 'warn');
         }
@@ -570,8 +570,8 @@ async function runExport() {
     try {
         let detectionPayload = state.detection ? { metadata: state.metadata, detection: state.detection } : null;
         if (!detectionPayload) {
-            setProgress(0.04, '检测中');
-            setStatus('正在检测水印候选...');
+            setProgress(0.04, 'Detecting');
+            setStatus('Detecting watermark candidates...');
             await yieldToBrowserFrame();
             const detected = await detectGeminiVideoWatermark(state.file, {
                 ...getDebugAlphaOptions(),
@@ -632,7 +632,7 @@ async function runExport() {
                     renderDetection(detection);
                 }
                 if (phase === 'detect') {
-                    setProgress(progress * 0.12, progress >= 1 ? '检测完成' : '检测中');
+                    setProgress(progress * 0.12, progress >= 1 ? 'Detection complete' : 'Detecting');
                 } else if (phase === 'export') {
                     const exportProgress = 0.12 + progress * 0.88;
                     const frames = Number.isFinite(processedFrames) ? `${processedFrames} frames` : 'Processing';
@@ -653,7 +653,7 @@ async function runExport() {
         syncProcessedToOriginal({ force: true });
         els.downloadBtn.href = state.processedUrl;
         els.downloadBtn.download = `${state.file.name.replace(/\.[^.]+$/, '')}_gwr_video_mvp.mp4`;
-        setProgress(1, '完成');
+        setProgress(1, 'Done');
         const audioNote = result.audioCopied
             ? `Audio preserved: ${result.audioCodec || 'unknown'}, ${result.audioPacketCount || 0} packets.`
             : `Audio not preserved: ${result.audioSkipReason || 'unknown'}.`;
@@ -690,7 +690,7 @@ function reset() {
     renderMetadata(null);
     renderDetection(null);
     renderAutoPresetSummary(null);
-    setProgress(0, '等待视频');
+    setProgress(0, 'Waiting for video');
     setStatus('');
     updateButtons();
 }
@@ -733,7 +733,7 @@ function applyAutomaticPreset(detection = state.detection, metadata = state.meta
     const preset = getAutomaticVideoPresetConfig(detection, metadata);
     applyPresetToControls(preset);
     if (!silent) {
-        setStatus(`已自动选择：${preset.label}。`, preset.allowLowConfidence ? 'warn' : 'success');
+        setStatus(`Automatically selected: ${preset.label}。`, preset.allowLowConfidence ? 'warn' : 'success');
     }
     return preset;
 }
@@ -868,7 +868,7 @@ async function init() {
     renderMetadata(null);
     renderDetection(null);
     updateCompareMode();
-    setProgress(0, '等待视频');
+    setProgress(0, 'Waiting for video');
     setupEvents();
     updateButtons();
     await consumePendingVideoHandoff();
