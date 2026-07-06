@@ -176,7 +176,7 @@ async function main() {
     const report = {
         generatedAt: new Date().toISOString(),
         objective:
-            '验证并收敛 48/96/96 大边距水印的窄口径 alpha/profile 候选：围绕 power-0.88 + alphaGain=0.55 建立可复现诊断、可视化对比和准入证据，确认其是否只适用于 48px large-margin 样本；在人工审阅完成前不得写正式 gold manifest、不得生产化 alpha/profile、不得放宽 45/46px local geometry。',
+            'Validate and converge the narrow alpha/profile candidates for 48/96/96 large-margin watermarks around power-0.88 + alphaGain=0.55, establishing reproducible diagnostics, visual comparisons, and admission evidence to confirm whether they apply only to 48px large-margin samples; do not write a formal gold manifest, promote alpha/profile, or loosen 45/46px local geometry before human review is complete.',
         artifactDir: args.artifactDir,
         goalAchieved: unsatisfiedRequirements.length === 0,
         conclusion: unsatisfiedRequirements.length === 0
