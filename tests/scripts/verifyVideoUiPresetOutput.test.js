@@ -29,7 +29,7 @@ test('createVideoUiPresetVerificationSummary should combine export and residual 
             bytes: 1234,
             resultState: {
                 statusTone: 'success',
-                statusText: 'AI 去水印已完成'
+                statusText: 'AI watermark removal is complete'
             },
             presetState: {
                 denoiseBackend: 'allenk-fdncnn-browser-spike',
