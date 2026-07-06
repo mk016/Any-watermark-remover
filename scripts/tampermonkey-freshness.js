@@ -132,10 +132,10 @@ export async function ensureTampermonkeyEditorPage(browser, extensionId) {
   await page.waitForTimeout(1500);
 
   const targetLocator = page.locator('span.clickable', {
-    hasText: 'Gemini NanoBanana 图片水印移除'
+    hasText: 'Gemini NanoBanana image watermark removal'
   }).first();
   if (await targetLocator.count() === 0) {
-    throw new Error('Tampermonkey 已安装脚本列表中未找到 Gemini NanoBanana 图片水印移除');
+    throw new Error('The installed Tampermonkey script list did not contain Gemini NanoBanana image watermark removal');
   }
 
   await targetLocator.click();
@@ -178,7 +178,7 @@ export async function runTampermonkeyFreshnessCheck({
     const candidates = await collectEditorSourceCandidates(editorPage);
     const bestCandidate = chooseBestEditorSourceCandidate(candidates);
     if (!bestCandidate) {
-      throw new Error('Tampermonkey 编辑器页面中没有可读取的 CodeMirror 脚本源码');
+      throw new Error('The Tampermonkey editor page does not contain readable CodeMirror script source');
     }
 
     const freshness = computeUserscriptFreshness({
