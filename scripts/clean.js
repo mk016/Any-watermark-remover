@@ -96,11 +96,11 @@ async function runCli() {
   const result = await runCleanup(options);
 
   if (result.removed.length === 0) {
-    console.log('没有需要清理的内容。');
+    console.log('There is nothing to clean up.');
     return;
   }
 
-  console.log(options.dryRun ? '将会清理以下路径：' : '已清理以下路径：');
+  console.log(options.dryRun ? 'The following paths will be cleaned:' : 'The following paths have been cleaned:');
   for (const removedPath of result.removed) {
     console.log(path.relative(process.cwd(), removedPath) || removedPath);
   }
