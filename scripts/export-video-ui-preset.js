@@ -48,7 +48,7 @@ function parseArgs(argv) {
         } else if (arg === '--help' || arg === '-h') {
             args.help = true;
         } else {
-            throw new Error(`未知参数: ${arg}`);
+            throw new Error(`Unknown argument: ${arg}`);
         }
     }
 
@@ -76,7 +76,7 @@ async function blobUrlToBuffer(page) {
     const base64 = await page.evaluate(async () => {
         const link = document.getElementById('downloadBtn');
         if (!link?.href || link.getAttribute('aria-disabled') === 'true') {
-            throw new Error('页面尚未生成可下载结果');
+            throw new Error('The page has not generated a downloadable result yet');
         }
 
         const blob = await fetch(link.href).then((response) => response.blob());
@@ -159,8 +159,8 @@ export async function exportVideoUiPreset({
     screenshots = true,
     timeoutMs = 6 * 60 * 1000
 }) {
-    if (!inputPath) throw new Error('缺少 --input');
-    if (!outputPath) throw new Error('缺少 --output');
+    if (!inputPath) throw new Error('Missing --input');
+    if (!outputPath) throw new Error('Missing --output');
 
     const resolvedOutputPath = path.resolve(outputPath);
     const resolvedReportPath = reportPath
@@ -202,7 +202,7 @@ export async function exportVideoUiPreset({
                 await page.screenshot({ path: afterScreenshotPath, fullPage: true });
             }
             if (resultState.statusTone !== 'success') {
-                throw new Error(resultState.statusText || '视频导出失败');
+                throw new Error(resultState.statusText || 'Video export failed');
             }
 
             const buffer = await blobUrlToBuffer(page);
