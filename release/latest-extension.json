@@ -2,7 +2,7 @@
   "name": "gemini-watermark-remover-extension",
   "version": "1.0.28",
   "file": "gemini-watermark-remover-extension-v1.0.28.zip",
-  "sha256": "81c80b4bad59da5ff13c043e7f828b9b58f3621df433dd2af32bc0cc2725e5b1",
-  "size": 1078595,
+  "sha256": "31e0f367ac383476a0b72bc6861f672245f97802ca68a7965112839c55393083",
+  "size": 1079416,
   "source": "dist/extension"
 }

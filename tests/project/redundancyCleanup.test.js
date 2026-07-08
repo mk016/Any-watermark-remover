@@ -78,7 +78,7 @@ test('README files should document the active Chrome extension release flow with
   assert.match(readmeZh, new RegExp(chromeWebStoreUrl.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
   assert.match(readmeZh, /Add to Chrome/);
   assert.match(readmeZh, /GitHub Releases/);
-  assert.match(readmeZh, /Alternate download entry/);
+  assert.match(readmeZh, /official website download entry/);
   assert.match(readmeZh, /gemini-watermark-remover-extension-v\*\.zip/);
   assert.match(readmeEn, /### Chrome Extension/);
   assert.match(readmeEn, new RegExp(chromeWebStoreUrl.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));

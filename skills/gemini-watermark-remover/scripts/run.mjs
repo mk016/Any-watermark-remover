@@ -1,4 +1,5 @@
 import { spawn, spawnSync } from 'node:child_process';
+import { realpathSync } from 'node:fs';
 import { access } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -93,6 +94,7 @@ function spawnOnce(command, commandArgs, options) {
 
 export async function runSkillCli(args, options = {}) {
   const candidates = await resolveCliCandidates(args);
+  console.log('CANDIDATES:', candidates);
   let lastSpawnError = null;
 
   for (const { command, commandArgs } of candidates) {
@@ -120,7 +122,11 @@ function isDirectRun() {
     return false;
   }
 
-  return resolve(process.argv[1]) === fileURLToPath(import.meta.url);
+  try {
+    return realpathSync(process.argv[1]) === realpathSync(fileURLToPath(import.meta.url));
+  } catch {
+    return resolve(process.argv[1]) === fileURLToPath(import.meta.url);
+  }
 }
 
 export async function main(argv = process.argv.slice(2)) {

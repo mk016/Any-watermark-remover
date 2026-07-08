@@ -156,6 +156,8 @@ function cleanDistBuildOutputs() {
     'tampermonkey-worker-probe.html',
     'tampermonkey-worker-probe.user.js',
     'video-app.js',
+    'watermark-remover.js',
+    'watermark-remover.html',
     'video-preview.html',
     'userscript',
     'workers'
@@ -314,6 +316,16 @@ const videoWebsiteCtx = await esbuild.context({
   sourcemap: !isProd,
 });
 
+const watermarkRemoverCtx = await esbuild.context({
+  ...commonConfig,
+  entryPoints: ['src/watermark-remover.js'],
+  outfile: 'dist/watermark-remover.js',
+  platform: 'browser',
+  target: ['es2022'],
+  banner: { js: jsBanner },
+  sourcemap: !isProd,
+});
+
 // Build website worker
 const workerCtx = await esbuild.context({
   ...commonConfig,
@@ -413,6 +425,7 @@ if (isProd) {
   await Promise.all([
     websiteCtx.rebuild(),
     videoWebsiteCtx.rebuild(),
+    watermarkRemoverCtx.rebuild(),
     workerCtx.rebuild(),
     userscriptCtx.rebuild(),
     extensionMainCtx.rebuild(),
@@ -427,6 +440,7 @@ if (isProd) {
   await Promise.all([
     websiteCtx.watch(),
     videoWebsiteCtx.watch(),
+    watermarkRemoverCtx.watch(),
     workerCtx.watch(),
     userscriptCtx.watch(),
     extensionMainCtx.watch(),

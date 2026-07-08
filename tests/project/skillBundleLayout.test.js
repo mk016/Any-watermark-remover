@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { access } from 'node:fs/promises';
-import { readdir, mkdtemp, mkdir, writeFile, cp } from 'node:fs/promises';
+import { readdir, mkdtemp, mkdir, writeFile, cp, chmod } from 'node:fs/promises';
 import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import os from 'node:os';
@@ -174,6 +174,7 @@ test('installed skill runtime should fall back to pnpm dlx when repo-local bin i
       `#!/usr/bin/env sh\nif [ "$1" = "dlx" ]; then shift; fi\nif [ "$1" = "@pilio/gemini-watermark-remover" ]; then shift; fi\nnode "${repoCliPath}" "$@"\n`,
       'utf8'
     );
+    await chmod(fakePnpmPath, 0o755);
   }
 
   const scriptPath = path.join(installRoot, 'scripts', 'run.mjs');

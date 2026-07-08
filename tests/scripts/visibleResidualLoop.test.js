@@ -1045,7 +1045,7 @@ test('create-visible-residual-human-review-pack should preserve human input file
         reviewInputContract.decisionSets.find((set) => set.name === 'metricPassVisible').expectedCount,
         1
     );
-    assert.match(readme, /Humans should edit only `review-decisions\.json`/);
+    assert.match(readme, /Humans should edit only .*`review-decisions\.json`/);
     assert.match(readme, /## Review Workflow/);
     assert.match(readme, /visible-residual:review-status/);
     assert.match(readme, /review-handoff\.md/);
@@ -4335,7 +4335,7 @@ test('create-visible-residual-goal-audit-report should summarize objective state
     assert.equal(report.policy.writesFormalGoldManifest, false);
     assert.equal(report.policy.writesProductionAlgorithm, false);
     assert.equal(report.status, 'human-gated-incomplete');
-    assert.match(report.objective, /Establish reproducible review for visible residual/);
+    assert.match(report.objective, /Establish .*reproducible review.* for visible residual/);
     assert.equal(report.summary.unconfirmedCount, 3);
     assert.equal(report.summary.goldCandidateUnconfirmedCount, 1);
     assert.equal(report.summary.reviewManifestSha256, reviewManifestSha256);

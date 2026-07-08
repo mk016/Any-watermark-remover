@@ -18,6 +18,7 @@ import {
     scoreVideoWatermarkFrame
 } from './videoWatermarkDetector.js';
 import { resolveVideoWatermarkCandidates } from './videoWatermarkCatalog.js';
+import { detectGenericVideoWatermarkFromFrames } from './genericVideoWatermarkDetector.js';
 import {
     DEFAULT_DENOISE_BACKEND,
     DEFAULT_EDGE_DENOISE_STRENGTH,
@@ -423,14 +424,18 @@ function smoothstep(edge0, edge1, value) {
     return t * t * (3 - 2 * t);
 }
 
-function applyRoiRemoval(originalRoi, alphaMap, gain) {
+function applyRoiRemoval(originalRoi, alphaMap, gain, logoColorMap = null, logoValue = undefined) {
     const candidate = cloneImageData(originalRoi);
     removeWatermark(candidate, alphaMap, {
         x: 0,
         y: 0,
         width: originalRoi.width,
         height: originalRoi.height
-    }, { alphaGain: gain });
+    }, {
+        alphaGain: gain,
+        logoColorMap: logoColorMap || undefined,
+        logoValue
+    });
     return candidate;
 }
 
@@ -737,7 +742,7 @@ function processWatermarkRoi(ctx, detection, options) {
             previousGain: options.previousAlphaGain
         })
         : options.seedAlphaGain;
-    const processed = applyRoiRemoval(roi, alphaMap, alphaGain);
+    const processed = applyRoiRemoval(roi, alphaMap, alphaGain, detection.logoColorMap || null, detection.logoValue);
     ctx.putImageData(processed, position.x, position.y);
     applyVideoResidualCleanup(ctx, position, alphaMap, {
         residualCleanupStrength: options.residualCleanupStrength,
@@ -812,7 +817,7 @@ async function processWatermarkRoiAsync(ctx, detection, options) {
             previousGain: options.previousAlphaGain
         })
         : options.seedAlphaGain;
-    const processed = applyRoiRemoval(roi, alphaMap, alphaGain);
+    const processed = applyRoiRemoval(roi, alphaMap, alphaGain, detection.logoColorMap || null, detection.logoValue);
     ctx.putImageData(processed, position.x, position.y);
     const cleanupResult = await applyVideoResidualCleanupAsync(ctx, position, alphaMap, {
         residualCleanupStrength: options.residualCleanupStrength,
@@ -841,6 +846,26 @@ async function processWatermarkRoiAsync(ctx, detection, options) {
 }
 
 export async function removeGeminiVideoWatermark(file, options = {}) {
+    const onProgress = typeof options.onProgress === 'function' ? options.onProgress : () => {};
+    onProgress({ phase: 'detect', progress: 0 });
+    const detected = options.detection || await detectGeminiVideoWatermark(file, {
+        sampleCount: options.sampleCount,
+        minConfidence: options.minConfidence,
+        candidates: options.candidates,
+        alphaProfile: options.alphaProfile,
+        alphaLowScale: options.alphaLowScale,
+        alphaBodyScale: options.alphaBodyScale,
+        alphaEdgeBoost: options.alphaEdgeBoost,
+        alphaLocalRegion: options.alphaLocalRegion,
+        alphaLocalLowScale: options.alphaLocalLowScale,
+        alphaLocalBodyScale: options.alphaLocalBodyScale,
+        onProgress,
+        yieldToMainThread: options.yieldToMainThread
+    });
+    return runVideoRemovalExport(file, detected, options);
+}
+
+export async function runVideoRemovalExport(file, detected, options = {}) {
     const requestedAlphaGain = Number.isFinite(options.alphaGain) && options.alphaGain > 0
         ? options.alphaGain
         : DEFAULT_ALPHA_GAIN;
@@ -859,21 +884,6 @@ export async function removeGeminiVideoWatermark(file, options = {}) {
     const onProgress = typeof options.onProgress === 'function' ? options.onProgress : () => {};
     const videoBitrate = resolveVideoBitrate(options.videoBitrate);
 
-    onProgress({ phase: 'detect', progress: 0 });
-    const detected = options.detection || await detectGeminiVideoWatermark(file, {
-        sampleCount: options.sampleCount,
-        minConfidence: options.minConfidence,
-        candidates: options.candidates,
-        alphaProfile: options.alphaProfile,
-        alphaLowScale: options.alphaLowScale,
-        alphaBodyScale: options.alphaBodyScale,
-        alphaEdgeBoost: options.alphaEdgeBoost,
-        alphaLocalRegion: options.alphaLocalRegion,
-        alphaLocalLowScale: options.alphaLocalLowScale,
-        alphaLocalBodyScale: options.alphaLocalBodyScale,
-        onProgress,
-        yieldToMainThread: options.yieldToMainThread
-    });
     const { metadata, detection } = detected;
     const allenkFdncnnPadding = resolveExportAllenkFdncnnPadding(cleanupOptions, detection);
     const detectedSeedGain = detection?.alphaSeed?.seedGain;
@@ -903,20 +913,14 @@ export async function removeGeminiVideoWatermark(file, options = {}) {
     const ctx = get2dContext(canvas);
     const target = new BufferTarget();
     const format = new Mp4OutputFormat();
-    const output = new Output({
-        format,
-        target
-    });
+    const output = new Output({ format, target });
     const source = new CanvasSource(canvas, {
         codec: 'avc',
         bitrate: videoBitrate,
         alpha: 'discard',
         keyFrameInterval: 2
     });
-
-    output.addVideoTrack(source, {
-        frameRate: metadata.frameRate
-    });
+    output.addVideoTrack(source, { frameRate: metadata.frameRate });
     const audioCopy = await prepareAudioPacketCopy({
         input,
         output,
@@ -943,7 +947,6 @@ export async function removeGeminiVideoWatermark(file, options = {}) {
 
     try {
         await output.start();
-        const audioCopyPromise = copyAudioPackets(audioCopy);
         const sink = new VideoSampleSink(videoTrack);
 
         for await (const sample of sink.samples()) {
@@ -1032,7 +1035,7 @@ export async function removeGeminiVideoWatermark(file, options = {}) {
         }
 
         source.close();
-        const audioResult = await audioCopyPromise;
+        const audioResult = await copyAudioPackets(audioCopy);
         await output.finalize();
 
         if (!target.buffer) {
@@ -1074,6 +1077,148 @@ export async function removeGeminiVideoWatermark(file, options = {}) {
         input.dispose();
     }
 }
+
+export async function detectGenericVideoWatermark(file, options = {}) {
+    const onProgress = typeof options.onProgress === 'function' ? options.onProgress : () => {};
+    const yieldToMainThread = typeof options.yieldToMainThread === 'function'
+        ? options.yieldToMainThread
+        : async () => {};
+    const { input, videoTrack } = await getVideoContext(file);
+    try {
+        const metadata = await resolveVideoMetadata(input, videoTrack);
+        onProgress({ phase: 'detect', step: 'metadata', progress: 0.04, metadata });
+        await yieldToMainThread();
+        const canvas = createRuntimeCanvas(metadata.width, metadata.height);
+        const ctx = get2dContext(canvas);
+        const sampleCount = Math.min(
+            options.sampleCount ?? DEFAULT_SAMPLE_COUNT,
+            options.maxDetectSamples ?? 64
+        );
+        const sink = new VideoSampleSink(videoTrack);
+        const targets = getSampleTargetTimestamps({
+            firstTimestamp: metadata.firstTimestamp,
+            duration: metadata.duration,
+            sampleCount
+        });
+        const frames = [];
+        let targetIndex = 0;
+        for await (const sample of sink.samples()) {
+            try {
+                if (targetIndex >= targets.length) break;
+                if (sample.timestamp < targets[targetIndex] && frames.length > 0) continue;
+                sample.draw(ctx, 0, 0, metadata.width, metadata.height);
+                frames.push({
+                    timestamp: sample.timestamp,
+                    imageData: ctx.getImageData(0, 0, metadata.width, metadata.height)
+                });
+                targetIndex++;
+                onProgress({
+                    phase: 'detect',
+                    step: 'sample',
+                    progress: 0.06 + 0.54 * Math.min(1, frames.length / targets.length),
+                    metadata,
+                    sampledFrames: frames.length,
+                    sampleCount: targets.length
+                });
+                await yieldToMainThread();
+            } finally {
+                sample.close();
+            }
+        }
+        if (!frames.length) {
+            throw new Error('Unable to extract detection frames from the video');
+        }
+        onProgress({
+            phase: 'detect',
+            step: 'score',
+            progress: 0.65,
+            metadata,
+            sampledFrames: frames.length,
+            sampleCount: targets.length
+        });
+        await yieldToMainThread();
+        const detection = detectGenericVideoWatermarkFromFrames({
+            frames,
+            width: metadata.width,
+            height: metadata.height,
+            options: {
+                maxFrames: options.maxFrames ?? 48,
+                detMaxDim: options.detMaxDim,
+                scoreThreshold: options.genericScoreThreshold,
+                minConfidence: options.minConfidence,
+                marginRatio: options.genericMarginRatio,
+                blurRadius: options.genericBlurRadius
+            }
+        });
+        onProgress({
+            phase: 'detect',
+            step: 'done',
+            progress: 1,
+            metadata,
+            detection
+        });
+        return { metadata, detection };
+    } finally {
+        input.dispose();
+    }
+}
+
+export async function detectVideoWatermark(file, options = {}) {
+    const mode = options.mode || 'auto';
+    const onProgress = typeof options.onProgress === 'function' ? options.onProgress : () => {};
+    const geminiDetectOpts = {
+        sampleCount: options.sampleCount,
+        minConfidence: options.minConfidence,
+        candidates: options.candidates,
+        alphaProfile: options.alphaProfile,
+        alphaLowScale: options.alphaLowScale,
+        alphaBodyScale: options.alphaBodyScale,
+        alphaEdgeBoost: options.alphaEdgeBoost,
+        alphaLocalRegion: options.alphaLocalRegion,
+        alphaLocalLowScale: options.alphaLocalLowScale,
+        alphaLocalBodyScale: options.alphaLocalBodyScale,
+        onProgress,
+        yieldToMainThread: options.yieldToMainThread
+    };
+
+    if (mode === 'gemini') {
+        return await detectGeminiVideoWatermark(file, geminiDetectOpts);
+    }
+    if (mode === 'generic') {
+        return await detectGenericVideoWatermark(file, options);
+    }
+
+    // mode === 'auto': Gemini first, fall back to generic when not confident.
+    let gemini = null;
+    try {
+        gemini = await detectGeminiVideoWatermark(file, geminiDetectOpts);
+    } catch (err) {
+        gemini = null;
+    }
+    if (gemini && gemini.detection && gemini.detection.isConfident) {
+        return gemini;
+    }
+    return await detectGenericVideoWatermark(file, options);
+}
+
+export async function removeVideoWatermark(file, options = {}) {
+    const mode = options.mode || 'auto';
+    let detected = options.detection;
+    if (!detected) {
+        detected = await detectVideoWatermark(file, options);
+    }
+    const isGeneric = detected.detection?.detector === 'generic-video';
+    const detection = detected.detection;
+    const hasPosition = detection && detection.position && Number.isFinite(detection.position.x);
+    if (!detection || !hasPosition || (!detection.isConfident && options.allowLowConfidence !== true)) {
+        throw new Error('Watermark detection failed: neither Gemini nor generic detection found a confident watermark region.');
+    }
+    return runVideoRemovalExport(file, detected, {
+        ...options,
+        genericFallback: isGeneric
+    });
+}
+
 
 export function resolveExportAllenkFdncnnPadding(cleanupOptions = {}, detection = null) {
     if (Number.isFinite(cleanupOptions.allenkFdncnnPadding)) {

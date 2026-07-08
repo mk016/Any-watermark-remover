@@ -3,7 +3,7 @@ import { access, mkdir, readFile, writeFile } from 'node:fs/promises';
 import { pathToFileURL } from 'node:url';
 
 const DEFAULT_VIDEO_DENOISE_BACKEND = 'allenk-fdncnn-browser-spike';
-const DEFAULT_VIDEO_TIMEOUT_MS = 6 * 60 * 1000;
+const DEFAULT_VIDEO_TIMEOUT_MS = 60 * 60 * 1000;
 
 function normalizeBufferLike(value) {
     if (Buffer.isBuffer(value)) return value;
@@ -120,7 +120,8 @@ async function processVideoWithPreviewPage(inputPath, options = {}) {
         videoBitrate,
         adaptiveAlpha = false,
         alphaGain,
-        alphaProfile
+        alphaProfile,
+        mode = 'auto'
     } = options;
 
     if (!isHttpUrl(pagePath)) {
@@ -154,6 +155,11 @@ async function processVideoWithPreviewPage(inputPath, options = {}) {
             await page.evaluate((value) => {
                 window.__gwrVideoAlphaProfile = value;
             }, alphaProfile);
+        }
+        if (mode && mode !== 'auto') {
+            await page.evaluate((value) => {
+                window.__gwrVideoMode = value;
+            }, mode);
         }
         if (Number.isFinite(edgeDenoiseStrength)) {
             const value = Math.max(0, Math.min(3, edgeDenoiseStrength));

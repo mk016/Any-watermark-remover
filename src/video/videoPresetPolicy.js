@@ -96,7 +96,7 @@ export function getVeoTextAutoPresetConfig() {
 }
 
 export function getAutomaticVideoPresetConfig(detection = null, metadata = null) {
-    if (shouldUseRelocatedReviewPreset(detection, metadata)) {
+    if (shouldUseRelocatedReviewPreset(detection, metadata) || detection?.detector === 'generic-video') {
         return getRelocatedReviewPresetConfig();
     }
     if (detection?.watermarkKind === 'veo-text') {

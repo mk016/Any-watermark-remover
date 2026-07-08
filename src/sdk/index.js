@@ -6,3 +6,4 @@ export {
     detectWatermarkConfig,
     removeRepeatedWatermarkLayers
 } from './browser.js';
+export { detectGenericImageWatermark, removeGenericImageWatermark } from './image-data.js';

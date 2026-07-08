@@ -66,7 +66,8 @@ function parseRemoveArgs(argv) {
     videoPage: null,
     videoDenoiseBackend: null,
     videoTimeoutMs: null,
-    allowLowConfidence: false
+    allowLowConfidence: false,
+    mode: 'auto'
   };
 
   let parseOptions = true;
@@ -149,6 +150,18 @@ function parseRemoveArgs(argv) {
 
     if (token === '--json') {
       options.json = true;
+      continue;
+    }
+
+    if (token === '--mode') {
+      const parsed = parseOptionValue(argv, index, '--mode');
+      if (!parsed.ok) return parsed;
+      const m = String(parsed.value).toLowerCase();
+      if (m !== 'gemini' && m !== 'generic' && m !== 'auto') {
+        return { ok: false, error: '--mode must be one of: gemini, generic, auto' };
+      }
+      options.mode = m;
+      index = parsed.index;
       continue;
     }
 
@@ -345,7 +358,8 @@ async function processOneFile(inputPath, outputPath, options) {
       timeoutMs: Number.isFinite(options.videoTimeoutMs) && options.videoTimeoutMs > 0
         ? options.videoTimeoutMs
         : undefined,
-      allowLowConfidence: options.allowLowConfidence
+      allowLowConfidence: options.allowLowConfidence,
+      mode: options.mode
     });
 
     return {
@@ -361,6 +375,7 @@ async function processOneFile(inputPath, outputPath, options) {
   const result = await removeWatermarkFromFile(inputPath, {
     outputPath,
     mimeType,
+    mode: options.mode,
     decodeImageData: codec.decodeImageData,
     encodeImageData: codec.encodeImageData
   });

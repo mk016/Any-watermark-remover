@@ -8,9 +8,9 @@ import {
     DEFAULT_SAMPLE_COUNT,
     DEFAULT_VIDEO_BITRATE,
     VIDEO_DENOISE_BACKENDS,
-    detectGeminiVideoWatermark,
+    detectVideoWatermark,
     inspectGeminiVideoFile,
-    removeGeminiVideoWatermark
+    removeVideoWatermark
 } from './video/videoExport.js';
 import { isReferenceGeminiVideoSize } from './video/videoWatermarkCatalog.js';
 import {
@@ -25,6 +25,81 @@ import {
     saveDebugFileHandoff
 } from './shared/debugFileHandoff.js';
 import { createAllenkFdncnnOnnxRuntime } from './core/allenkFdncnnOnnxRuntime.js';
+
+// Intercept console logs to display on the page
+(function() {
+    let isFirst = true;
+    function appendLog(message, type) {
+        const logConsole = document.getElementById('logConsole');
+        if (!logConsole) return;
+        if (isFirst) {
+            logConsole.textContent = '';
+            isFirst = false;
+        }
+        
+        const logLine = document.createElement('div');
+        logLine.style.marginBottom = '4px';
+        logLine.style.borderBottom = '1px solid #222';
+        logLine.style.paddingBottom = '2px';
+        
+        const timeSpan = document.createElement('span');
+        timeSpan.style.color = '#888';
+        timeSpan.style.marginRight = '8px';
+        const d = new Date();
+        timeSpan.textContent = `[${d.toLocaleTimeString()}]`;
+        logLine.appendChild(timeSpan);
+        
+        const typeSpan = document.createElement('span');
+        typeSpan.style.marginRight = '8px';
+        typeSpan.style.fontWeight = 'bold';
+        if (type === 'error') {
+            typeSpan.style.color = '#ff4d4d';
+            typeSpan.textContent = '[ERROR]';
+            logLine.style.color = '#ff9999';
+        } else if (type === 'warn') {
+            typeSpan.style.color = '#ffcc00';
+            typeSpan.textContent = '[WARN]';
+            logLine.style.color = '#ffe680';
+        } else if (type === 'info') {
+            typeSpan.style.color = '#3399ff';
+            typeSpan.textContent = '[INFO]';
+            logLine.style.color = '#b3d9ff';
+        } else {
+            typeSpan.style.color = '#00ff00';
+            typeSpan.textContent = '[LOG]';
+            logLine.style.color = '#ccffcc';
+        }
+        logLine.appendChild(typeSpan);
+        
+        const textNode = document.createTextNode(message);
+        logLine.appendChild(textNode);
+        
+        logConsole.appendChild(logLine);
+        logConsole.scrollTop = logConsole.scrollHeight;
+    }
+
+    const originalLog = console.log;
+    const originalInfo = console.info;
+    const originalWarn = console.warn;
+    const originalError = console.error;
+
+    console.log = function(...args) {
+        originalLog.apply(console, args);
+        appendLog(args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' '), 'log');
+    };
+    console.info = function(...args) {
+        originalInfo.apply(console, args);
+        appendLog(args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' '), 'info');
+    };
+    console.warn = function(...args) {
+        originalWarn.apply(console, args);
+        appendLog(args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' '), 'warn');
+    };
+    console.error = function(...args) {
+        originalError.apply(console, args);
+        appendLog(args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' '), 'error');
+    };
+})();
 
 const $ = (id) => document.getElementById(id);
 const ALLENK_FDNCNN_WASM_PATHS = Object.freeze({
@@ -78,6 +153,7 @@ const els = {
     videoBitrateMbps: $('videoBitrateMbps'),
     sampleCount: $('sampleCount'),
     allowLowConfidence: $('allowLowConfidence'),
+    videoMode: $('videoMode'),
     autoPresetSummary: $('autoPresetSummary'),
     processBtn: $('processBtn'),
     detectBtn: $('detectBtn'),
@@ -245,11 +321,16 @@ function createDetectionProgressHandler(jobId, { start = 0, span = 1 } = {}) {
         };
         setProgress(start + safeProgress * span, labelByStep[step] || 'Detecting');
         if (step === 'sample') {
-            setStatus(sampleCount > 0
+            const msg = sampleCount > 0
                 ? `Sampling frames to detect watermark: ${sampledFrames}/${sampleCount}`
-                : 'Sampling frames to detect watermark...');
+                : 'Sampling frames to detect watermark...';
+            setStatus(msg);
+            console.info(`[GWR Video] ${msg}`);
         } else if (step === 'score') {
             setStatus('Matching watermark candidates; the page will remain responsive...');
+            console.info(`[GWR Video] Matching watermark candidates...`);
+        } else if (step === 'done') {
+            console.info(`[GWR Video] Candidate detection done.`);
         }
     };
 }
@@ -410,21 +491,28 @@ function renderDetection(detection) {
     }
 
     const best = detection.summary?.best || {};
-    const bestLabel = detection.watermarkKind === 'veo-text'
-        ? (best.templateId || detection.template?.id || 'Veo text')
-        : (best.label || best.candidateId || detection.candidate?.label || 'unknown');
-    const bestScore = Number.isFinite(best.meanConfidence)
-        ? best.meanConfidence
-        : Number.isFinite(best.meanNcc)
-            ? best.meanNcc
-            : null;
+    const bestLabel = detection.detector === 'generic-video'
+        ? 'Generic Video Watermark'
+        : detection.watermarkKind === 'veo-text'
+            ? (best.templateId || detection.template?.id || 'Veo text')
+            : (best.label || best.candidateId || detection.candidate?.label || 'unknown');
+    const bestScore = detection.detector === 'generic-video'
+        ? detection.confidence
+        : Number.isFinite(best.meanConfidence)
+            ? best.meanConfidence
+            : Number.isFinite(best.meanNcc)
+                ? best.meanNcc
+                : null;
+    const votesStr = detection.detector === 'generic-video'
+        ? `${detection.framesAnalyzed}/${detection.framesAnalyzed}`
+        : `${best.votes || 0}/${detection.summary?.frameCount || 0}`;
     els.detection.innerHTML = `
         <dl>
             <div><dt>Candidate</dt><dd>${bestLabel}</dd></div>
             <div><dt>Position</dt><dd>${detection.position.x}, ${detection.position.y}</dd></div>
             <div><dt>Size</dt><dd>${detection.position.width} x ${detection.position.height}</dd></div>
             <div><dt>Mean score</dt><dd>${Number.isFinite(bestScore) ? bestScore.toFixed(3) : '-'}</dd></div>
-            <div><dt>Votes</dt><dd>${best.votes || 0}/${detection.summary?.frameCount || 0}</dd></div>
+            <div><dt>Votes</dt><dd>${votesStr}</dd></div>
             <div><dt>Status</dt><dd>${detection.isConfident ? 'Exportable' : 'Low confidence'}</dd></div>
         </dl>
     `;
@@ -477,8 +565,8 @@ async function setFile(file) {
         applyAutomaticPreset(null, metadata, { silent: true });
         setStatus('Video loaded. Click export to use AI watermark removal.');
     } catch (error) {
-        console.error(error);
-        setStatus(error.message || 'Failed to read video', 'error');
+        console.error('[GWR Video] Failed to inspect video file:', error);
+        setStatus(`Failed to read video: ${error.message || error}. Details logged to developer console.`, 'error');
     } finally {
         updateButtons();
     }
@@ -531,7 +619,8 @@ async function runDetection() {
 
     try {
         await yieldToBrowserFrame();
-        const result = await detectGeminiVideoWatermark(state.file, {
+        const result = await detectVideoWatermark(state.file, {
+            mode: els.videoMode ? els.videoMode.value : 'auto',
             ...getDebugAlphaOptions(),
             sampleCount: Number(els.sampleCount.value) || DEFAULT_SAMPLE_COUNT,
             onProgress: createDetectionProgressHandler(jobId, { start: 0.05, span: 0.9 }),
@@ -566,6 +655,11 @@ async function runExport() {
     updateButtons();
     setProgress(0, 'Starting');
     setStatus('Processing frame-by-frame locally; keep the page open.');
+    console.info(`[GWR Video] Starting export job:`, {
+        file: state.file.name,
+        size: state.file.size,
+        mode: els.videoMode ? els.videoMode.value : 'auto'
+    });
 
     try {
         let detectionPayload = state.detection ? { metadata: state.metadata, detection: state.detection } : null;
@@ -573,7 +667,8 @@ async function runExport() {
             setProgress(0.04, 'Detecting');
             setStatus('Detecting watermark candidates...');
             await yieldToBrowserFrame();
-            const detected = await detectGeminiVideoWatermark(state.file, {
+            const detected = await detectVideoWatermark(state.file, {
+                mode: els.videoMode ? els.videoMode.value : 'auto',
                 ...getDebugAlphaOptions(),
                 sampleCount: Number(els.sampleCount.value) || DEFAULT_SAMPLE_COUNT,
                 onProgress: createDetectionProgressHandler(jobId, { start: 0.04, span: 0.08 }),
@@ -602,7 +697,8 @@ async function runExport() {
         const debugAlphaOptions = getDebugAlphaOptions();
         if (jobId !== state.jobId) return;
 
-        const result = await removeGeminiVideoWatermark(state.file, {
+        const result = await removeVideoWatermark(state.file, {
+            mode: els.videoMode ? els.videoMode.value : 'auto',
             alphaGain: Number(els.alphaGain.value) || DEFAULT_ALPHA_GAIN,
             adaptiveAlpha: els.adaptiveAlpha.checked,
             highQualityCleanup: els.highQualityCleanup.checked,
@@ -636,9 +732,13 @@ async function runExport() {
                 } else if (phase === 'export') {
                     const exportProgress = 0.12 + progress * 0.88;
                     const frames = Number.isFinite(processedFrames) ? `${processedFrames} frames` : 'Processing';
-                    const aiNote = '';
                     setProgress(exportProgress, `Exporting ${frames}`);
                     setStatus(`Exporting video; processed ${frames}.`);
+                    
+                    if (Number.isFinite(processedFrames) && processedFrames % 25 === 0) {
+                        const pct = Math.round(progress * 100);
+                        console.info(`[GWR Video] Export progress: ${pct}% | Processed: ${processedFrames} frames | Denoised: ${aiDenoiseFrames || 0} | Reused: ${aiReuseFrames || 0}`);
+                    }
                 }
             }
         });
@@ -660,10 +760,15 @@ async function runExport() {
         const cleanupNote = result.denoiseBackend === VIDEO_DENOISE_BACKENDS.ALLENK_FDNCNN_BROWSER_SPIKE
             ? 'AI watermark removal completed'
             : 'Watermark removal completed';
-        const aiNote = '';
         setStatus(`${cleanupNote}; processed ${result.processedFrames} frames. ${audioNote}`, 'success');
+        console.info(`[GWR Video] Export complete!`, {
+            processedFrames: result.processedFrames,
+            audioCopied: result.audioCopied,
+            audioCodec: result.audioCodec,
+            audioPacketCount: result.audioPacketCount
+        });
     } catch (error) {
-        console.error(error);
+        console.error(`[GWR Video] Export failed:`, error);
         setStatus(error.message || 'Export failed', 'error');
     } finally {
         state.running = false;
@@ -747,6 +852,9 @@ function applyDebugControlOverrides() {
     }
     if (typeof window.__gwrVideoOverrideAllowLowConfidence === 'boolean') {
         els.allowLowConfidence.checked = window.__gwrVideoOverrideAllowLowConfidence;
+    }
+    if (typeof window.__gwrVideoMode === 'string' && els.videoMode) {
+        els.videoMode.value = window.__gwrVideoMode;
     }
     if (Number.isFinite(window.__gwrVideoOverrideEdgeDenoiseStrength)) {
         setNumberControl(
@@ -839,6 +947,30 @@ function setupEvents() {
     els.processedVideo.addEventListener('loadedmetadata', () => {
         syncProcessedToOriginal({ force: true });
         updateCompareMode();
+    });
+    els.originalVideo.addEventListener('error', (event) => {
+        const err = els.originalVideo.error;
+        console.error('[GWR Video] Original video loading/playback error:', err);
+        let detail = 'Unknown error';
+        if (err) {
+            if (err.code === 1) detail = 'Playback aborted by user';
+            else if (err.code === 2) detail = 'Network error during download';
+            else if (err.code === 3) detail = 'Decoding failed (unsupported codec or corrupted file)';
+            else if (err.code === 4) detail = 'Format or source not supported by browser';
+        }
+        setStatus(`Original video player error: ${detail}. Details logged to developer console.`, 'error');
+    });
+    els.processedVideo.addEventListener('error', (event) => {
+        const err = els.processedVideo.error;
+        console.error('[GWR Video] Processed video loading/playback error:', err);
+        let detail = 'Unknown error';
+        if (err) {
+            if (err.code === 1) detail = 'Playback aborted by user';
+            else if (err.code === 2) detail = 'Network error during download';
+            else if (err.code === 3) detail = 'Decoding failed (unsupported codec or corrupted file)';
+            else if (err.code === 4) detail = 'Format or source not supported by browser';
+        }
+        setStatus(`Processed video player error: ${detail}. Details logged to developer console.`, 'error');
     });
     window.addEventListener('beforeunload', cleanupUrls);
 }
